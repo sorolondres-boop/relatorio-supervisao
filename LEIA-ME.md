@@ -101,7 +101,7 @@ mensagem é mais forte e acolhedora, para ele não desanimar. Nunca fala em nota
 
 ## Aparência
 
-O visual padrão é o **Jogo** (fundo escuro com brilhos, trilha de progresso e controles em esfera). Cada pessoa pode trocar em Configurações → Aparência para **Claro**, **Escuro** ou **Automático** (segue o celular). A escolha fica salva no aparelho.
+O visual padrão é o **Ouro**: fundo escuro com ondas de luz dourada, cartões de vidro com borda dourada, trilha de gemas em 3D até o troféu, avatares com anel dourado, barra de missão com estrela, contador com placas de dígitos e botões metálicos. No botão de cada supervisor aparece a etiqueta verde "Ativo hoje" quando ele lançou uma saída hoje ou é quem está usando o app. Cada pessoa pode trocar em Configurações → Aparência para **Jogo**, **Claro**, **Escuro** ou **Automático** (segue o celular). A escolha fica salva no aparelho. As fotos de avatar também valem para os supervisores (card Avatares da equipe).
 
 Se a escolha de aparência era da versão antiga, o app volta para o **Jogo** uma vez; depois é só escolher de novo em
 Configurações → Aparência.

@@ -6,7 +6,7 @@
 <meta name="google" content="notranslate">
 <title>Gestão à Vista</title>
 <meta name="description" content="Gestão à Vista: supervisão de vendas com saídas de campo, tarefas dos vendedores e resultados.">
-<meta name="theme-color" content="#121214">
+<meta name="theme-color" content="#0B0C10">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -15,9 +15,9 @@
 <meta name="apple-mobile-web-app-title" content="Gestão à Vista">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script>
-/* Visual Jogo por padrão. Quem preferir pode escolher Claro, Escuro ou Automático em Configurações (rs_tema3: a escolha da versão antiga, rs_tema, não vale mais). */
-window.__BUILD='20261021141324';
-try{var t=(localStorage.getItem('rs_tema3')||'').replace(/"/g,''),h=document.documentElement;if(t==='')t='game';if(t==='dark'||t==='game')h.setAttribute('data-theme',t);else if(t!=='auto')h.setAttribute('data-theme','light');if(t==='game')h.setAttribute('data-forma','jogo');}catch(e){document.documentElement.setAttribute('data-theme','game');document.documentElement.setAttribute('data-forma','jogo');}
+/* Visual Ouro por padrão. Quem preferir pode escolher Claro, Escuro ou Automático em Configurações (rs_tema3: a escolha da versão antiga, rs_tema, não vale mais). */
+window.__BUILD='20261021161053';
+try{var t=(localStorage.getItem('rs_tema3')||'').replace(/"/g,''),h=document.documentElement;if(t==='')t='ouro';if(t==='dark'||t==='game'||t==='ouro')h.setAttribute('data-theme',t);else if(t!=='auto')h.setAttribute('data-theme','light');if(t==='game')h.setAttribute('data-forma','jogo');if(t==='ouro')h.setAttribute('data-forma','ouro');}catch(e){document.documentElement.setAttribute('data-theme','ouro');document.documentElement.setAttribute('data-forma','ouro');}
 </script>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -894,6 +894,118 @@ button.vcell{cursor:pointer;background:var(--surface2);color:var(--ink)}
 :root[data-forma="jogo"] #chipsSup .chip[aria-pressed="true"] .tagativo{display:inline-block;position:absolute;top:-10px;right:8px;font:800 10px var(--body);padding:3px 9px;border-radius:999px;background:#34D399;color:#04261b;box-shadow:0 0 12px rgba(52,211,153,.7);z-index:2}
 :root[data-forma="jogo"] .chip{display:inline-flex;align-items:center}
 </style>
+<style id="ouro">
+/* ===== Tema Ouro: escuro com dourado, vidro fosco, peças em 3D e muita luz ===== */
+:root[data-theme="ouro"]{
+  color-scheme:dark;
+  --bg:#0B0C10;--surface:rgba(34,35,42,.74);--surface2:rgba(255,255,255,.06);--ink:#F6F2EA;--ink2:#ABA699;--line:rgba(227,185,101,.24);
+  --navy:#0B0C10;--on-navy:#F6F2EA;--on-navy2:#BDB7A9;
+  --teal:#E3B965;--teal-soft:rgba(227,185,101,.16);--btn-fg:#241705;
+  --good:#7BE0A4;--good-soft:rgba(123,224,164,.14);--warn:#F0B35A;--warn-soft:rgba(240,179,90,.14);--bad:#F28B82;--bad-soft:rgba(242,139,130,.15);
+  --lbl:#DAD4C6;--ans:#E8C275;--bubble:rgba(60,60,70,.5);--bubble-ink:#EEE9DD;--bubble-line:rgba(255,255,255,.18);
+  --bar:#E3B965;--bar-track:rgba(255,255,255,.12);
+  --hdr-bg:linear-gradient(135deg,rgba(40,41,49,.94),rgba(11,12,16,.94));--hdr-ink:#F6F2EA;--hdr-ink2:#BDB7A9;--hdr-line:rgba(227,185,101,.32);--hdr-sh:rgba(0,0,0,.7);
+}
+/* fundo com feixes de luz dourada e azul, ondas e pontos de brilho */
+:root[data-forma="ouro"] body{background:radial-gradient(900px 520px at 88% -8%,rgba(227,185,101,.2),transparent 62%),radial-gradient(720px 520px at -12% 42%,rgba(96,120,200,.17),transparent 60%),radial-gradient(640px 420px at 60% 112%,rgba(227,185,101,.12),transparent 60%),linear-gradient(180deg,#101116,#0A0B0E 60%,#08090b) fixed;color:var(--ink)}
+:root[data-forma="ouro"] body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--svg-ondas) center/cover no-repeat;opacity:.75}
+:root[data-forma="ouro"] .top{background:var(--hdr-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--hdr-line);border-radius:0 0 28px 28px;box-shadow:0 18px 40px -22px rgba(0,0,0,.9),0 1px 0 rgba(255,226,160,.18) inset}
+:root[data-forma="ouro"] .top h1::after{color:#FFD76A;text-shadow:0 0 12px rgba(255,215,106,.9)}
+
+/* cartões de vidro com borda dourada iluminada */
+:root[data-forma="ouro"] body .card,:root[data-forma="ouro"] body .prog{border:1px solid transparent!important;border-radius:24px;background:linear-gradient(180deg,rgba(46,47,56,.84),rgba(24,25,31,.84)) padding-box,linear-gradient(160deg,rgba(255,228,165,.8),rgba(227,185,101,.2) 42%,rgba(227,185,101,.55)) border-box!important;backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,240,200,.14),0 22px 44px -24px rgba(0,0,0,.9),0 0 30px -12px rgba(227,185,101,.3)}
+:root[data-forma="ouro"] .tile,:root[data-forma="ouro"] .out,:root[data-forma="ouro"] .kcard,:root[data-forma="ouro"] .task{border-radius:20px;border-color:rgba(227,185,101,.22)}
+:root[data-forma="ouro"] .tile.big{background:linear-gradient(135deg,#3b3a35,#8a6a2d 70%,#c79a45);border-color:rgba(255,226,160,.5);box-shadow:0 0 26px rgba(227,185,101,.35)}
+:root[data-forma="ouro"] .ico{background:rgba(227,185,101,.12)!important;border:1px solid rgba(227,185,101,.38);color:#EAC57A;border-radius:14px;filter:none;box-shadow:0 0 14px -4px rgba(227,185,101,.5)}
+:root[data-forma="ouro"] .card h2{letter-spacing:.1px}
+:root[data-forma="ouro"] .lbl{color:var(--lbl)}
+
+/* campos e botões */
+:root[data-forma="ouro"] input[type=text],:root[data-forma="ouro"] input[type=date],:root[data-forma="ouro"] input[type=number],:root[data-forma="ouro"] input[type=email],:root[data-forma="ouro"] input[type=password],:root[data-forma="ouro"] textarea,:root[data-forma="ouro"] select{background:rgba(8,9,12,.6);border:1px solid rgba(227,185,101,.3);border-radius:16px;color:var(--ink)}
+:root[data-forma="ouro"] input:focus,:root[data-forma="ouro"] textarea:focus,:root[data-forma="ouro"] select:focus{outline:0;border-color:#F0CF86;box-shadow:0 0 0 3px rgba(227,185,101,.22),0 0 18px rgba(227,185,101,.3)}
+:root[data-forma="ouro"] .money{border-radius:18px;background:rgba(8,9,12,.6);border-color:rgba(227,185,101,.3)}
+:root[data-forma="ouro"] .btn{border-radius:999px;background:linear-gradient(180deg,#34353c,#232429);border:1px solid rgba(227,185,101,.3);color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 6px 14px -8px rgba(0,0,0,.8)}
+:root[data-forma="ouro"] .btn.primary{background:linear-gradient(180deg,#F8DCC9,#D9A18C 52%,#A9695A);border:1px solid rgba(255,238,220,.75);color:#2B1409;font-weight:800;box-shadow:0 0 0 1px rgba(227,185,101,.25),0 10px 28px -8px rgba(217,161,140,.75),0 0 24px -4px rgba(255,214,150,.45),inset 0 2px 3px rgba(255,255,255,.6),inset 0 -7px 11px rgba(110,50,35,.3)}
+:root[data-forma="ouro"] .btn.dangerbtn{color:#fda4af;border-color:#fb7185}
+:root[data-forma="ouro"] .savebar .btn.primary{min-height:54px;padding:0 26px;font-size:17px}
+:root[data-forma="ouro"] #btnSave::before{content:'🚀'}
+:root[data-forma="ouro"] #btnSave::after{content:'🏆'}
+
+/* botões de escolha: pílulas metálicas; o escolhido ganha contorno dourado e brilho */
+:root[data-forma="ouro"] .chip{position:relative;min-height:46px;padding:0 20px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,#3a3b43,#25262c);color:#D3CEC1;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 14px -8px rgba(0,0,0,.85)}
+:root[data-forma="ouro"] .chip[aria-pressed="true"]{background:linear-gradient(180deg,#1d1c18,#11100e);border:1.5px solid #E8C275;color:#FFE9B5;box-shadow:0 0 0 1px rgba(232,194,117,.22),0 0 20px rgba(232,194,117,.55),inset 0 0 16px rgba(232,194,117,.2)}
+:root[data-forma="ouro"] .chip[aria-pressed="true"]:not(.add)::before{color:#FFD76A}
+:root[data-forma="ouro"] .chip[aria-pressed="true"]::after{content:'';position:absolute;inset:-9px;pointer-events:none;background:radial-gradient(circle at 10% 18%,#FFE9A8 0 1.5px,transparent 2.6px),radial-gradient(circle at 90% 12%,#FFD27A 0 2px,transparent 3px),radial-gradient(circle at 80% 92%,#FFE9A8 0 1.5px,transparent 2.6px),radial-gradient(circle at 18% 88%,#FFD27A 0 1.5px,transparent 2.6px),radial-gradient(circle at 50% 2%,#FFF1C4 0 1.2px,transparent 2.2px)}
+:root[data-forma="ouro"] .chip.add{border-style:solid;color:#EAC57A}
+:root[data-forma="ouro"] .chip.sm{min-height:40px;padding:0 15px}
+:root[data-forma="ouro"] .chip{display:inline-flex;align-items:center}
+:root[data-forma="ouro"] .chip .em{display:none}
+
+/* avatares: anel dourado duplo com brilho (foto ou inicial) */
+:root[data-forma="ouro"] .kav{box-shadow:0 0 0 2px rgba(227,185,101,.7),0 0 10px rgba(227,185,101,.35)}
+:root[data-forma="ouro"] .av{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;margin-right:10px;font:800 18px var(--display);color:#fff;background-size:cover;background-position:center;box-shadow:0 0 0 2px #0E0E11,0 0 0 4px #E3B965,0 0 18px rgba(227,185,101,.6)}
+:root[data-forma="ouro"] #chipsSup .chip:not(.add){padding:6px 16px 6px 8px;min-height:60px;gap:0;flex:1 1 150px}
+:root[data-forma="ouro"] #chipsSup .chip:not(.add)::before,:root[data-forma="ouro"] #chipsVend .chip:not(.add)::before{content:none!important}
+:root[data-forma="ouro"] #chipsSup .tagativo{display:inline-block;margin-left:10px;font:800 10px var(--body);padding:3px 9px;border-radius:999px;background:#7BE0A4;color:#08301a;box-shadow:0 0 12px rgba(123,224,164,.6);white-space:nowrap}
+:root[data-forma="ouro"] #chipsVend{display:flex;flex-wrap:wrap;gap:16px 2px}
+:root[data-forma="ouro"] #chipsVend .chip:not(.add){flex-direction:column;gap:7px;width:52px;min-height:0;height:auto;padding:0;background:none;border:0;box-shadow:none;font-size:11px;font-weight:600;color:#D8D2C4;overflow:visible}
+:root[data-forma="ouro"] #chipsVend .chip:not(.add) .av{width:46px;height:46px;margin:0;font-size:19px}
+:root[data-forma="ouro"] #chipsVend .chip[aria-pressed="true"]:not(.add){color:#FFE9B5;font-weight:800;background:none;box-shadow:none;border:0}
+:root[data-forma="ouro"] #chipsVend .chip[aria-pressed="true"]:not(.add)::after{inset:-4px 0 auto 0;height:62px;background:radial-gradient(circle at 12% 22%,#FFE9A8 0 1.5px,transparent 2.6px),radial-gradient(circle at 90% 14%,#FFD27A 0 2px,transparent 3px),radial-gradient(circle at 84% 70%,#FFE9A8 0 1.5px,transparent 2.6px)}
+:root[data-forma="ouro"] #chipsVend .chip[aria-pressed="true"] .av{box-shadow:0 0 0 2px #0E0E11,0 0 0 4px #FFE9A8,0 0 26px rgba(255,214,128,.95)}
+:root[data-forma="ouro"] #chipsVend .chip.add{flex-direction:column;gap:7px;width:52px;min-height:0;height:auto;padding:0;background:none;border:0;box-shadow:none;font-size:11px;font-weight:600;color:#D8D2C4}
+:root[data-forma="ouro"] #chipsVend .chip.add::before{content:'';display:block;width:46px;height:46px;background:var(--svg-presente) center/contain no-repeat;filter:drop-shadow(0 0 10px rgba(227,185,101,.6))}
+@media (min-width:480px){
+  :root[data-forma="ouro"] #chipsVend{gap:16px 10px}
+  :root[data-forma="ouro"] #chipsVend .chip:not(.add),:root[data-forma="ouro"] #chipsVend .chip.add{width:66px;font-size:12.5px}
+  :root[data-forma="ouro"] #chipsVend .chip:not(.add) .av{width:58px;height:58px;font-size:22px}
+  :root[data-forma="ouro"] #chipsVend .chip.add::before{width:58px;height:58px}
+}
+
+/* trilha de conquistas: gemas em 3D ligadas por um fio de luz, terminando no troféu */
+:root[data-forma="ouro"] .proghead b{font-size:22px}
+:root[data-forma="ouro"] .proghead small{color:#EAC57A}
+:root[data-forma="ouro"] .psteps{position:relative;margin-top:16px;gap:0}
+:root[data-forma="ouro"] .psteps::before{content:'';position:absolute;left:7%;right:7%;top:31px;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(227,185,101,.2),#E3B965 30%,#FFEBB0 62%,#E3B965 92%);box-shadow:0 0 10px rgba(255,214,128,.85),0 0 24px rgba(227,185,101,.4);z-index:0}
+:root[data-forma="ouro"] .pstep span{position:relative;z-index:1;width:56px;height:62px;border:0;border-radius:0;background:var(--svg-gema-rose) center/contain no-repeat;color:#FFF8E6;font-size:0;font-weight:800;filter:drop-shadow(0 7px 8px rgba(0,0,0,.6));box-shadow:none}
+:root[data-forma="ouro"] .pstep.on span{background-image:var(--svg-gema-ouro);font-size:19px;text-shadow:0 1px 3px rgba(70,40,0,.9);filter:drop-shadow(0 0 11px rgba(255,214,128,.8)) drop-shadow(0 7px 8px rgba(0,0,0,.5))}
+:root[data-forma="ouro"] .psteps>.pstep.on+.pstep:not(.on) span,:root[data-forma="ouro"] .psteps>.pstep:first-child:not(.on) span{filter:drop-shadow(0 0 14px rgba(255,226,160,.95)) drop-shadow(0 7px 8px rgba(0,0,0,.5))}
+:root[data-forma="ouro"] .pstep:last-child span{background-image:var(--svg-trofeu);filter:saturate(.6) brightness(.78) drop-shadow(0 7px 8px rgba(0,0,0,.6))}
+:root[data-forma="ouro"] .pstep:last-child.on span{filter:drop-shadow(0 0 14px rgba(255,214,128,.95)) drop-shadow(0 7px 8px rgba(0,0,0,.5))}
+:root[data-forma="ouro"] .pstep small{font-size:9.5px;letter-spacing:-.3px;color:var(--ink2)}
+:root[data-forma="ouro"] .pstep.on small,:root[data-forma="ouro"] .psteps>.pstep.on+.pstep:not(.on) small,:root[data-forma="ouro"] .psteps>.pstep:first-child:not(.on) small{color:#F1D58F;font-weight:800}
+
+/* missão de hoje: barra dourada com estrela na ponta e baú no final */
+:root[data-forma="ouro"] .mission{display:block;margin-top:16px;padding:12px 14px 12px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(227,185,101,.3)}
+:root[data-forma="ouro"] .mission .mtop b{color:#FFE9B5}
+:root[data-forma="ouro"] .mission .mbarr{height:12px;margin-right:6px;background:rgba(0,0,0,.5);border:1px solid rgba(227,185,101,.38);overflow:visible;position:relative}
+:root[data-forma="ouro"] .mission .mbarr i{position:relative;background:linear-gradient(90deg,#8A6A2D,#E3B965 55%,#FFF0C2);box-shadow:0 0 14px rgba(255,220,140,.8)}
+:root[data-forma="ouro"] .mission .mbarr i::after{content:'';position:absolute;right:-18px;top:50%;width:36px;height:36px;transform:translateY(-50%);background:var(--svg-estrela) center/contain no-repeat;filter:drop-shadow(0 0 9px rgba(255,214,128,.95))}
+:root[data-forma="ouro"] .mission .bau{filter:drop-shadow(0 0 9px rgba(255,214,128,.7))}
+
+/* controles numéricos: visor com dígitos em placas e botões metálicos */
+.flip{display:none}
+:root[data-forma="ouro"] .stp{flex-direction:column;align-items:stretch;gap:10px}
+:root[data-forma="ouro"] .stpbox{position:relative;justify-content:flex-start;gap:12px}
+:root[data-forma="ouro"] .flip{display:inline-flex;gap:5px;padding:6px;border-radius:15px;background:linear-gradient(180deg,#D9AE5C,#7A5420);box-shadow:0 0 0 1px rgba(255,236,190,.35),0 10px 22px -10px rgba(0,0,0,.9),0 0 22px -6px rgba(227,185,101,.55),inset 0 1px 2px rgba(255,255,255,.5)}
+:root[data-forma="ouro"] .flip span{position:relative;width:38px;height:54px;border-radius:9px;background:linear-gradient(180deg,#35363e 0 49.6%,#0E0F12 50.4% 100%);color:#FBF6EA;font:700 34px/54px var(--display);text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+:root[data-forma="ouro"] .flip span::after{content:'';position:absolute;left:0;right:0;top:calc(50% - .5px);height:1px;background:rgba(0,0,0,.85)}
+:root[data-forma="ouro"] .stpbox input{position:absolute;left:0;top:0;width:142px;height:100%;opacity:0;padding:0;font-size:16px}
+:root[data-forma="ouro"] .stpbtn{width:54px;height:54px;border-radius:50%;border:1px solid rgba(255,255,255,.4);font-size:30px;font-weight:800;color:#2A1A05;line-height:1;box-shadow:0 10px 18px -8px rgba(0,0,0,.85),inset 0 3px 5px rgba(255,255,255,.55),inset 0 -8px 12px rgba(90,45,5,.35)}
+:root[data-forma="ouro"] .stpbtn[data-d="-1"]{margin-left:auto;background:radial-gradient(circle at 35% 28%,#FFF0C0,#D9A84E 55%,#8B5E1A);box-shadow:0 0 18px rgba(227,185,101,.5),0 10px 18px -8px rgba(0,0,0,.85),inset 0 3px 5px rgba(255,255,255,.55),inset 0 -8px 12px rgba(90,45,5,.35)}
+:root[data-forma="ouro"] .stpbtn[data-d="1"]{background:radial-gradient(circle at 35% 28%,#FBE2D8,#D69A86 55%,#7A4A3A);box-shadow:0 0 18px rgba(214,154,134,.5),0 10px 18px -8px rgba(0,0,0,.85),inset 0 3px 5px rgba(255,255,255,.55),inset 0 -8px 12px rgba(90,45,5,.35)}
+:root[data-forma="ouro"] .stpbtn:active{transform:scale(.92)}
+:root[data-forma="ouro"] .card:has(#fVisitas)>h2::after{content:'Combo de Visitas 🔥';margin-left:auto;font:700 12px var(--body);padding:7px 12px;border-radius:999px;border:1px solid rgba(227,185,101,.6);background:rgba(227,185,101,.12);color:#F1D58F;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){
+  :root[data-forma="ouro"] .flip.pop span{animation:flipin .28s ease-out}
+}
+@keyframes flipin{from{transform:rotateX(70deg);opacity:.4}to{transform:none;opacity:1}}
+
+/* barra de baixo: vidro escuro com fio dourado; todas as abas em dourado */
+:root[data-forma="ouro"] .dock{background:linear-gradient(180deg,rgba(28,29,36,.94),rgba(11,12,16,.97));backdrop-filter:blur(16px);border-top:1px solid rgba(227,185,101,.38);border-radius:26px 26px 0 0;box-shadow:0 -14px 36px -16px rgba(0,0,0,.9),0 -1px 0 rgba(255,226,160,.18)}
+:root[data-forma="ouro"] #supTabs .tab[data-tab],:root[data-forma="ouro"] #vTabs .tab[data-vtab]{--tabc:#E3B965}
+:root[data-forma="ouro"] .tab[aria-selected="true"]{background:rgba(227,185,101,.14);box-shadow:0 0 20px -4px rgba(227,185,101,.45);color:#FFE9B5}
+</style>
 <header class="top"><div class="wrap topin">
   <div><p class="eyebrow">Supervisão de vendas · Sorocaba, Londrina e Curitiba</p><h1>Gestão à Vista</h1></div>
   <button id="btnCfg" class="iconbtn" type="button" aria-label="Configurações">
@@ -1561,11 +1673,14 @@ function decorarChips(){
     if(!nome)return;
     c.dataset.av='1';
     const av=document.createElement('span');av.className='av';av.textContent=nome.charAt(0).toUpperCase();av.style.setProperty('background',corAv(nome));
+    const ap=window.__ouro;   /* o app informa a foto do avatar (só gerência e supervisão recebem) e quem está ativo hoje */
+    const foto=ap&&ap.foto?ap.foto(nome):'';
+    if(foto){av.textContent='';av.style.setProperty('background-image','url('+foto+')');av.style.setProperty('background-size','cover');av.style.setProperty('background-position','center');}
     const resto=document.createTextNode(nome);
     c.textContent='';
     if(m){const em=document.createElement('span');em.className='em';em.textContent=m[1]+' ';c.append(em);}
     c.append(av,resto);
-    if(c.closest('#chipsSup')){const t=document.createElement('span');t.className='tagativo';t.textContent='● Ativo';c.append(t);}
+    if(c.closest('#chipsSup')&&ap&&ap.ativo&&ap.ativo(nome)){const t=document.createElement('span');t.className='tagativo';t.textContent='● Ativo hoje';c.append(t);}
   });
 }
 /* tema Jogo: missão de hoje (barra de progresso com baú do tesouro) */
@@ -1669,6 +1784,71 @@ window.__supa.boasVindas=boasVindas;
 window.__supa.confete=confete;
 window.__supa.masc=MASC;
 if(window.__supa.ready)window.__supa.ready.then(()=>setTimeout(()=>boasVindas(false),700));
+})();
+
+/* Tema Ouro: as peças em 3D (gemas, troféu, presente, estrela, ondas de luz) são desenhadas em SVG aqui e entram no CSS como variáveis;
+   o visor de números mostra os dígitos em placas, copiando o valor dos campos de cada controle (o campo continua sendo o dono do número). */
+(function(){
+'use strict';
+const url=s=>'url("data:image/svg+xml,'+encodeURIComponent(s)+'")';
+const gema=(luz,meio,escuro,baseA,baseB)=>'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><defs>'+
+  '<linearGradient id="g" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="'+luz+'"/><stop offset=".55" stop-color="'+meio+'"/><stop offset="1" stop-color="'+escuro+'"/></linearGradient>'+
+  '<linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+baseA+'"/><stop offset="1" stop-color="'+baseB+'"/></linearGradient></defs>'+
+  '<ellipse cx="32" cy="63" rx="28" ry="8" fill="'+baseB+'"/><ellipse cx="32" cy="60" rx="28" ry="8" fill="url(#b)"/><ellipse cx="32" cy="59" rx="22" ry="5.5" fill="rgba(0,0,0,.35)"/>'+
+  '<polygon points="16,10 48,10 60,28 32,58 4,28" fill="url(#g)"/>'+
+  '<polygon points="16,10 24,10 18,28 4,28" fill="rgba(255,255,255,.22)"/><polygon points="24,10 40,10 32,28" fill="rgba(255,255,255,.5)"/><polygon points="40,10 48,10 60,28 46,28" fill="rgba(0,0,0,.1)"/>'+
+  '<polygon points="4,28 18,28 32,58" fill="rgba(0,0,0,.22)"/><polygon points="32,28 46,28 32,58" fill="rgba(255,255,255,.26)"/><polygon points="46,28 60,28 32,58" fill="rgba(0,0,0,.16)"/>'+
+  '<path d="M4 28H60M24 10L18 28M24 10L32 28M40 10L32 28M40 10L46 28M18 28L32 58M32 28V58M46 28L32 58" stroke="rgba(255,255,255,.55)" stroke-width=".9" fill="none"/>'+
+  '<polygon points="16,10 48,10 60,28 32,58 4,28" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/></svg>';
+const TROFEU='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><defs>'+
+  '<linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3D0"/><stop offset=".5" stop-color="#E2B35C"/><stop offset="1" stop-color="#8B5E1A"/></linearGradient>'+
+  '<linearGradient id="u" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1D58F"/><stop offset="1" stop-color="#6E4A12"/></linearGradient></defs>'+
+  '<ellipse cx="32" cy="67" rx="20" ry="4" fill="rgba(0,0,0,.35)"/><rect x="18" y="58" width="28" height="9" rx="2.5" fill="url(#u)"/><rect x="22" y="53" width="20" height="7" rx="2" fill="url(#t)"/><rect x="28" y="44" width="8" height="11" fill="url(#u)"/>'+
+  '<path d="M17 6H47V24C47 36 40 45 32 45C24 45 17 36 17 24Z" fill="url(#t)"/>'+
+  '<path d="M17 11H8C8 24 12 30 21 32" fill="none" stroke="url(#t)" stroke-width="4.5" stroke-linecap="round"/><path d="M47 11H56C56 24 52 30 43 32" fill="none" stroke="url(#t)" stroke-width="4.5" stroke-linecap="round"/>'+
+  '<path d="M22 10C21 24 24 36 30 41C24 36 20 26 22 10Z" fill="rgba(255,255,255,.55)"/>'+
+  '<polygon points="32,15 34.4,21 40.5,21.4 35.8,25.3 37.3,31.3 32,28 26.7,31.3 28.2,25.3 23.5,21.4 29.6,21" fill="rgba(255,248,225,.92)"/></svg>';
+const PRESENTE='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs>'+
+  '<linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6D58A"/><stop offset="1" stop-color="#9A6A22"/></linearGradient>'+
+  '<linearGradient id="r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D0"/><stop offset="1" stop-color="#D9A64E"/></linearGradient></defs>'+
+  '<ellipse cx="32" cy="60" rx="24" ry="3.5" fill="rgba(0,0,0,.35)"/><rect x="8" y="28" width="48" height="30" rx="3" fill="url(#a)"/><rect x="5" y="20" width="54" height="12" rx="3" fill="url(#a)"/>'+
+  '<rect x="28" y="20" width="8" height="38" fill="url(#r)"/><path d="M32 20C24 4 10 8 15 16C18 21 28 20 32 20Z" fill="url(#r)" stroke="rgba(120,80,20,.5)"/>'+
+  '<path d="M32 20C40 4 54 8 49 16C46 21 36 20 32 20Z" fill="url(#r)" stroke="rgba(120,80,20,.5)"/><rect x="8" y="28" width="48" height="4" fill="rgba(0,0,0,.18)"/></svg>';
+const ESTRELA='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><defs><linearGradient id="e" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".5" stop-color="#F2C45A"/><stop offset="1" stop-color="#B9791E"/></linearGradient></defs>'+
+  '<polygon points="24,3 30,17 45,18 33.5,28 37,43 24,35 11,43 14.5,28 3,18 18,17" fill="url(#e)" stroke="#8B5E1A" stroke-width="1.2" stroke-linejoin="round"/><polygon points="24,3 30,17 24,22 18,17" fill="rgba(255,255,255,.45)"/></svg>';
+const PONTOS=[[40,120,1.2],[70,210,1.6],[22,330,1.1],[55,470,1.4],[30,610,1.2],[95,700,1],[355,90,1.4],[330,200,1.1],[372,310,1.7],[345,430,1.2],[365,560,1.1],[320,690,1.5],[200,60,1],[230,760,1.2]];
+const ONDAS='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="o" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6D58A" stop-opacity="0"/><stop offset=".5" stop-color="#F6D58A" stop-opacity=".6"/><stop offset="1" stop-color="#7C9BFF" stop-opacity="0"/></linearGradient></defs>'+
+  '<g fill="none" stroke="url(#o)" stroke-width="1.4"><path d="M-20 300C60 270 100 360 30 430S-10 560 60 610"/><path d="M-20 320C50 300 85 380 20 450S0 570 50 630" opacity=".7"/><path d="M-20 340C40 330 70 400 10 470S10 580 40 650" opacity=".5"/>'+
+  '<path d="M410 120C330 150 300 230 360 300S380 420 320 470"/><path d="M410 140C340 170 315 245 370 315S390 430 335 485" opacity=".7"/><path d="M410 160C350 190 330 260 380 330S400 440 350 500" opacity=".5"/>'+
+  '<path d="M-20 700C80 680 150 740 230 700S350 640 410 690" opacity=".5"/></g><g fill="#FFE2A0">'+PONTOS.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" opacity=".7"/>').join('')+'</g></svg>';
+const R=document.documentElement.style;
+R.setProperty('--svg-gema-ouro',url(gema('#FFF3D0','#E2B35C','#8B5E1A','#F1D58F','#7A5214')));
+R.setProperty('--svg-gema-rose',url(gema('#F7D9CF','#C98D7C','#6D4237','#D9A592','#5B382E')));
+R.setProperty('--svg-trofeu',url(TROFEU));
+R.setProperty('--svg-presente',url(PRESENTE));
+R.setProperty('--svg-estrela',url(ESTRELA));
+R.setProperty('--svg-ondas',url(ONDAS));
+
+/* visor de números: um conjunto de placas por controle, sempre com pelo menos 3 dígitos */
+function visor(){
+  document.querySelectorAll('.stpbox').forEach(b=>{
+    const campo=b.querySelector('input');
+    if(!campo)return;
+    let v=b.querySelector('.flip');
+    if(!v){v=document.createElement('div');v.className='flip';v.setAttribute('aria-hidden','true');b.prepend(v);}
+    const n=String(Math.max(0,parseInt(campo.value,10)||0)).padStart(3,'0');
+    if(v.dataset.n===n)return;
+    const primeiro=v.dataset.n==null;
+    v.dataset.n=n;v.textContent='';
+    [...n].forEach(d=>{const s=document.createElement('span');s.textContent=d;v.append(s);});
+    if(!primeiro){v.classList.remove('pop');void v.offsetWidth;v.classList.add('pop');}
+  });
+}
+let aguardando=false;
+const agendar=()=>{if(aguardando)return;aguardando=true;requestAnimationFrame(()=>{aguardando=false;visor();});};
+['input','change','click'].forEach(e=>document.addEventListener(e,agendar,true));
+if(document.body)new MutationObserver(agendar).observe(document.body,{childList:true,subtree:true});
+window.addEventListener('load',agendar);
 })();
 </script>
 <script>
@@ -3340,14 +3520,14 @@ function renderConta(){
   c.hidden=!sp;
   if(!sp)return;
   $('#cContaInfo').textContent='Conectado como '+(sp.email||'')+(sp.perfil?' · '+(ROT_PAPEL[sp.perfil.papel]||''):'')+'.';
-  const tema=LS.get('rs_tema3','game');
+  const tema=LS.get('rs_tema3','ouro');
   const ct=$('#cTema');ct.textContent='';
-  [['game','🎮 Jogo'],['light','☀️ Claro'],['dark','🌙 Escuro'],['auto','📱 Automático']].forEach(([v,t])=>ct.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(tema===v),text:t,onclick:()=>{
+  [['ouro','✨ Ouro'],['game','🎮 Jogo'],['light','☀️ Claro'],['dark','🌙 Escuro'],['auto','📱 Automático']].forEach(([v,t])=>ct.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(tema===v),text:t,onclick:()=>{
     LS.set('rs_tema3',v);
     const H=document.documentElement;
     if(v==='auto')H.removeAttribute('data-theme');else H.setAttribute('data-theme',v);
-    if(v==='game')H.setAttribute('data-forma','jogo');else H.removeAttribute('data-forma');
-    const mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',v==='game'?'#121214':'#16324F');
+    if(v==='game')H.setAttribute('data-forma','jogo');else if(v==='ouro')H.setAttribute('data-forma','ouro');else H.removeAttribute('data-forma');
+    const mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',v==='ouro'?'#0B0C10':v==='game'?'#121214':'#16324F');
     renderConta();}})));
   if(sp.pintarInstalar)sp.pintarInstalar();
 }
@@ -4257,6 +4437,11 @@ function vendMetas(body){
    Só o desenho pequeno fica guardado, em config/avatares = { fotos: { Nome: { u: imagem em texto, t: carimbo } } }.
    O vendedor não lê a coleção config, então nunca recebe os avatares. */
 Object.assign(S,{avatares:{},avOn:false,crFr:'',crT:0});
+/* o visual (visual.js) pergunta aqui a foto de cada nome e quem está ativo hoje, para desenhar os botões de supervisor e vendedor */
+window.__ouro={
+  foto:n=>(S.avatares[n]&&S.avatares[n].u)||'',
+  ativo:n=>S.me.sup===n||S.recs.some(r=>r.supervisor===n&&r.data===iso(new Date()))
+};
 
 /* ---------- avatares: guardar, ler e mostrar ---------- */
 function avSync(){
@@ -4419,8 +4604,10 @@ function avEditor(nome,img,limpar){
 function mtAvatares(body){
   const c=el('div',{class:'card'},el('h2',null,el('span',{class:'ico g',text:'🎭'}),'Avatares da equipe'),
     el('p',{class:'hint',text:'Anexe a foto de cada vendedor (o app pode transformar em desenho) ou um avatar que já esteja pronto. O app guarda só o recorte pequeno, que aparece dentro do kart na corrida e nas listas, só para gerência e supervisão.'}));
-  S.cfg.franquias.forEach(fr=>{
-    const lista=mtVendedores(fr);if(!lista.length)return;
+  const grupos=S.cfg.franquias.map(fr=>['🏪 '+fr,'av'+fr,mtVendedores(fr)]);
+  grupos.push(['👔 Supervisores','avSupervisores',(S.cfg.supervisores||[]).map(n=>({n:n,fr:''}))]);
+  grupos.forEach(([titulo,chave,lista])=>{
+    if(!lista.length)return;
     const linhas=lista.map(x=>{
       const tem=!!(S.avatares[x.n]&&S.avatares[x.n].u);
       return el('div',{class:'avrow'},vavatar(x.n),el('b',{text:x.n}),
@@ -4428,7 +4615,7 @@ function mtAvatares(body){
         tem?el('button',{type:'button',class:'btn sm dangerbtn',text:'Remover',onclick:()=>avSalvar(x.n,null)}):null);
     });
     const n=lista.filter(x=>S.avatares[x.n]&&S.avatares[x.n].u).length;
-    c.append(foldBox('av'+fr,'🏪 '+fr+' · '+n+' de '+lista.length+' com avatar',linhas));
+    c.append(foldBox(chave,titulo+' · '+n+' de '+lista.length+' com avatar',linhas));
   });
   body.append(c);
 }
