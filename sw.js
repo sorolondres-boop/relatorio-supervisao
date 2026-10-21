@@ -1,5 +1,5 @@
 /* Service worker: o app abre mesmo com sinal fraco. Os dados (Supabase) nunca ficam em cache. */
-const VERSAO = 'rs-v2';
+const VERSAO = 'rs-v3';
 const BASE = ['./', 'index.html', 'manifest.webmanifest', 'supabase-config.js',
   'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'favicon.png'];
 

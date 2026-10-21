@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="google" content="notranslate">
-<title>Relatório de Supervisão</title>
-<meta name="description" content="Relatório de supervisão de vendas: saídas de campo, tarefas dos vendedores e resultados.">
-<meta name="theme-color" content="#16324F">
+<title>Gestão à Vista</title>
+<meta name="description" content="Gestão à Vista: supervisão de vendas com saídas de campo, tarefas dos vendedores e resultados.">
+<meta name="theme-color" content="#121214">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Supervisão">
+<meta name="apple-mobile-web-app-title" content="Gestão à Vista">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script>
 /* Visual claro por padrão. Quem preferir pode escolher Escuro ou Automático em Configurações. */
-try{var t=localStorage.getItem('rs_tema');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');else if(t!=='auto')document.documentElement.setAttribute('data-theme','light');}catch(e){document.documentElement.setAttribute('data-theme','light');}
+try{var t=(localStorage.getItem('rs_tema')||'').replace(/"/g,''),h=document.documentElement;if(t==='')t='game';if(t==='dark'||t==='game')h.setAttribute('data-theme',t);else if(t!=='auto')h.setAttribute('data-theme','light');if(t==='game')h.setAttribute('data-forma','jogo');}catch(e){document.documentElement.setAttribute('data-theme','game');document.documentElement.setAttribute('data-forma','jogo');}
 </script>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -673,8 +673,188 @@ button.drill:hover{border-color:var(--teal)}
 .obacts{display:flex;gap:10px;margin-top:14px}
 .obacts .btn{flex:1}
 </style>
+<style>
+/* ---- agenda do mês ---- */
+.agcard.warnb{border-color:var(--warn)}
+.aghead{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.aghead .agh{display:flex;flex-direction:column;flex:1;min-width:0}
+.aghead .agh b{font-family:var(--display);font-size:17px}
+.agchev{font-size:18px;color:var(--ink2);flex:none}
+.agnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 2px}
+.agnav b{flex:1;text-align:center}
+.aglaunch{margin-top:12px;padding:12px;border:1.5px dashed var(--teal);border-radius:14px;background:var(--surface2)}
+.agtpl{margin-top:4px}
+.agslot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.agtpl .agslot:first-child{border-top:0}
+.agslot.done{opacity:.8}
+.agn{width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--btn-fg);font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.agtipo{flex:1 1 190px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.agsel{width:100%;min-height:46px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface);color:var(--ink);font-size:16px}
+.agoutro{width:100%}
+.agdt{display:flex;align-items:center;gap:6px;flex:0 1 auto}
+.agdate{width:158px;min-width:0}
+.agdw{text-transform:uppercase;font-weight:700}
+.agcli{flex:1 1 100%;margin-top:2px}
+.agitem{border-top:1px solid var(--line);padding:4px 0}
+.agvhead{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:4px 0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.agvn{display:flex;flex-direction:column;flex:1;min-width:0}
+.agvn small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agreqs{margin-top:12px}
+.agreqwrap{margin-top:8px}
+.agreq{margin-top:8px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--warn);background:var(--warn-soft);color:var(--ink);display:flex;flex-direction:column;gap:6px;flex:1 1 100%}
+.agreq small{color:var(--ink2)}
+.agreq.ok{border-color:var(--good);background:var(--good-soft)}
+.agreq.no{border-color:var(--bad);background:var(--bad-soft)}
+.agreq.pend{border-style:dashed}
+.agreq>*,.agform>*{flex:0 0 auto}
+.agtag{display:block;font-weight:700;color:var(--teal);margin-bottom:2px}
+.agform{margin-top:10px;padding:12px;border:1.5px dashed var(--teal);border-radius:14px;background:var(--surface2);display:flex;flex-direction:column;gap:8px}
+.agform .lbl{margin:0}
+.agv .agvrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.agv .hint+.agvrow{border-top:0}
+.agemo{font-size:22px;flex:none}
+.agvt{display:flex;flex-direction:column;flex:1;min-width:0}
+/* ---- agenda do vendedor: semana e mês ---- */
+#vTabs{grid-template-columns:repeat(5,1fr)}
+#vTabs .tab[data-vtab="agenda"]{--tabc:#7A52D1}
+.vag{padding:12px}
+.vagday{padding:10px 0;border-top:1px solid var(--line)}
+.vag>.vagday:first-child{border-top:0}
+.vagdh{display:flex;align-items:center;gap:8px;scroll-margin-top:96px}
+.vagday.hoje .vagdh b{color:var(--teal)}
+.vagday.vazio{padding:8px 0}
+.vagdh .vagnada{margin-left:auto}
+.vagseg .segb{align-content:center;min-height:46px;font-size:14px}
+.vagrow{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:6px 10px;margin-top:8px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface2);color:inherit;text-align:left;cursor:pointer;font:inherit}
+.vagrow.fim{opacity:.7}
+.vagt{display:flex;flex-direction:column;flex:1;min-width:0}
+.vagt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vagitem .kcard{margin-top:6px}
+.vcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.vch{text-align:center;font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase}
+.vcvazio{display:block}
+.vcell{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:12px;background:transparent;color:var(--ink2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:2px;font:inherit;font-size:14px}
+button.vcell{cursor:pointer;background:var(--surface2);color:var(--ink)}
+.vcell.hoje{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-soft)}
+.vdots{display:flex;gap:3px;height:7px}
+.vd{display:block;width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.vd.ok{background:var(--good)}
+.vd.late{background:var(--bad)}
+/* ---- tela motivacional do vendedor ---- */
+.motview{position:fixed;inset:0;z-index:460;background:rgba(15,30,45,.62);backdrop-filter:blur(5px);display:flex;padding:20px;overflow:auto}
+.motcard{margin:auto;border:2px solid transparent;border-radius:30px;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,#F472B6,#818CF8 50%,#34D399) border-box;box-shadow:0 0 34px rgba(129,140,248,.35),0 30px 60px -30px rgba(0,0,0,.6)}
+.motcard.forte{background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,#FBBF24,#F472B6 55%,#FB7185) border-box;box-shadow:0 0 34px rgba(251,191,36,.32),0 30px 60px -30px rgba(0,0,0,.6)}
+.motcard .obemo{font-size:56px}
+:root[data-forma="jogo"] .motview{background:rgba(4,4,8,.72)}
+:root[data-forma="jogo"] .motcard .obt{background:linear-gradient(90deg,#FDE68A,#F9A8D4,#A7F3D0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.motdest{display:flex;flex-direction:column;gap:4px;margin:14px 0 0;padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:14px;color:var(--ink);text-align:left}
+.motdest small{font-weight:600;color:var(--ink2)}
+.confetti{z-index:470}
+@media (prefers-reduced-motion:no-preference){
+  .motcard{animation:motin .35s ease-out}
+  .motcard .obemo{animation:motpulse 1.8s ease-in-out infinite}
+}
+@keyframes motin{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes motpulse{50%{transform:scale(1.12)}}
+</style>
+<style id="pontos">
+/* ---- aba Metas ---- */
+#supTabs{grid-template-columns:repeat(6,1fr)}
+#supTabs .tab[data-tab="metas"]{--tabc:#2E9D5B}
+.mtv{padding:10px 0;border-top:1px solid var(--line)}
+.mtv:first-child{border-top:0}
+.mtvh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mtg2,.mtg3{display:grid;gap:8px;align-items:end}
+.mtg2{grid-template-columns:1.4fr 1fr}
+.mtg3{grid-template-columns:1.5fr 1fr 1fr}
+.mtf{min-width:0}
+.mtf .lbl{display:block;margin:0 0 4px;font-size:12px}
+.mtf input{width:100%;min-width:0}
+.mtmsg{margin:8px 0 0;font-weight:600;color:var(--ink)}
+</style>
+<style id="game">
+/* ===== Tema "Jogo": fundo galáctico, brilhos, cantos bem redondos e controles de joystick ===== */
+:root[data-theme="game"]{
+  color-scheme:dark;
+  --bg:#121214;--surface:rgba(40,40,46,.82);--surface2:rgba(70,70,80,.40);--ink:#F3F4F6;--ink2:#A8ADB8;--line:rgba(255,255,255,.16);
+  --navy:#121214;--on-navy:#F3F4F6;--on-navy2:#B8BDC8;
+  --teal:#34D399;--teal-soft:rgba(52,211,153,.16);--btn-fg:#04261b;
+  --good:#6EE7B7;--good-soft:rgba(52,211,153,.14);--warn:#FBBF24;--warn-soft:rgba(251,191,36,.14);--bad:#FB7185;--bad-soft:rgba(251,113,133,.15);
+  --lbl:#D1D5DB;--ans:#93C5FD;--bubble:rgba(60,60,70,.55);--bubble-ink:#E5E7EB;--bubble-line:rgba(255,255,255,.22);
+  --bar:#34D399;--bar-track:rgba(148,163,184,.22);
+  --hdr-bg:linear-gradient(135deg,rgba(46,46,52,.95),rgba(18,18,20,.95));--hdr-ink:#F3F4F6;--hdr-ink2:#B8BDC8;--hdr-line:rgba(255,255,255,.22);--hdr-sh:rgba(0,0,0,.65);
+}
+:root[data-forma="jogo"] body{background:radial-gradient(circle at 50% -10%,#34343a 0%,#232327 30%,#151518 62%,#09090b 100%) fixed;color:var(--ink)}
+:root[data-forma="jogo"] body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(420px 320px at 92% 16%,rgba(255,255,255,.06),transparent 70%),radial-gradient(380px 300px at 6% 60%,rgba(255,255,255,.04),transparent 70%)}
+:root[data-forma="jogo"] .top{backdrop-filter:blur(12px);border-bottom:1px solid var(--hdr-line);border-radius:0 0 30px 30px}
+:root[data-forma="jogo"] .dock{background:rgba(24,24,28,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);border-radius:28px 28px 0 0;box-shadow:0 -12px 34px -14px rgba(0,0,0,.65)}
+
+/* cartões: borda com degradê iluminado e cantos bem redondos */
+:root[data-forma="jogo"] body .card,:root[data-forma="jogo"] body .prog{border:1.5px solid transparent!important;border-radius:30px;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,rgba(244,114,182,.65),rgba(129,140,248,.6) 50%,rgba(52,211,153,.55)) border-box!important;backdrop-filter:blur(10px);box-shadow:0 20px 44px -26px rgba(0,0,0,.6)}
+:root[data-forma="jogo"] .tile,:root[data-forma="jogo"] .out,:root[data-forma="jogo"] .kcard,:root[data-forma="jogo"] .task{border-radius:22px}
+:root[data-forma="jogo"] .tile.big{background:linear-gradient(135deg,#3b3f4a,#0f766e 60%,#10b981);border-color:transparent;box-shadow:0 0 24px rgba(16,185,129,.35)}
+:root[data-forma="jogo"] .ico{border-radius:16px;filter:brightness(1.45)}
+
+/* campos e botões */
+:root[data-forma="jogo"] input[type=text],:root[data-forma="jogo"] input[type=date],:root[data-forma="jogo"] input[type=number],:root[data-forma="jogo"] input[type=email],:root[data-forma="jogo"] input[type=password],:root[data-forma="jogo"] textarea{background:rgba(20,20,24,.7);border-radius:18px;border-color:rgba(255,255,255,.22);color:var(--ink)}
+:root[data-forma="jogo"] .btn{border-radius:999px;background:rgba(55,55,64,.85);border-color:rgba(255,255,255,.22);color:var(--ink)}
+:root[data-forma="jogo"] .btn.primary{background:linear-gradient(135deg,#34D399,#10B981);border-color:#6EE7B7;color:#04261b;font-weight:800;box-shadow:0 0 0 2px rgba(52,211,153,.25),0 0 24px rgba(52,211,153,.6)}
+:root[data-forma="jogo"] .savebar .btn.primary{min-height:54px;padding:0 26px;font-size:17px}
+:root[data-forma="jogo"] .btn.dangerbtn{color:#fda4af;border-color:#fb7185}
+
+/* botões de seleção: pílulas; o escolhido brilha com confetes discretos */
+:root[data-forma="jogo"] .chip{position:relative;overflow:visible;background:rgba(55,55,64,.85);border:1.5px solid rgba(255,255,255,.2);color:var(--ink);border-radius:999px;min-height:48px;padding:0 18px}
+:root[data-forma="jogo"] .chip[aria-pressed="true"]{background:linear-gradient(135deg,#34D399,#10B981);border-color:#A7F3D0;color:#04261b;font-weight:800;box-shadow:0 0 0 2px rgba(52,211,153,.3),0 0 22px rgba(52,211,153,.65)}
+:root[data-forma="jogo"] .chip[aria-pressed="true"]::after{content:'';position:absolute;inset:-9px;pointer-events:none;background:radial-gradient(circle at 10% 18%,#fbbf24 0 2px,transparent 3px),radial-gradient(circle at 90% 12%,#f472b6 0 2px,transparent 3px),radial-gradient(circle at 78% 92%,#60a5fa 0 2px,transparent 3px),radial-gradient(circle at 20% 88%,#a78bfa 0 2px,transparent 3px),radial-gradient(circle at 50% 2%,#34d399 0 1.5px,transparent 2.5px)}
+:root[data-forma="jogo"] .chip.add{background:rgba(52,211,153,.08);border:1.5px dashed #34D399;color:#6EE7B7;box-shadow:0 0 14px rgba(52,211,153,.25)}
+:root[data-forma="jogo"] .chip.sm{min-height:40px}
+:root[data-forma="jogo"] #chipsPer .chip[data-per="manha"]{background:linear-gradient(135deg,#38bdf8,#fdba74);border-color:rgba(255,255,255,.4);color:#10233a;opacity:.85}
+:root[data-forma="jogo"] #chipsPer .chip[data-per="tarde"]{background:linear-gradient(135deg,#fb923c,#f472b6);border-color:rgba(255,255,255,.4);color:#2b1020;opacity:.85}
+:root[data-forma="jogo"] #chipsPer .chip[aria-pressed="true"]{opacity:1;border-color:#A7F3D0;box-shadow:0 0 0 2px rgba(52,211,153,.35),0 0 22px rgba(52,211,153,.65)}
+:root[data-forma="jogo"] #chipsPer .chip[data-per="dia"][aria-pressed="true"]{background:linear-gradient(135deg,#34D399,#10B981);color:#04261b}
+
+/* trilha de progresso (mapa de fases) com coroa na etapa atual */
+:root[data-forma="jogo"] .psteps{position:relative;margin-top:18px}
+:root[data-forma="jogo"] .psteps::before{content:'';position:absolute;left:8%;right:8%;top:23px;border-top:3px dotted rgba(255,255,255,.3);z-index:0}
+:root[data-forma="jogo"] .pstep span{position:relative;z-index:1;width:46px;height:46px;background:rgba(50,50,58,.96);border:2px solid rgba(255,255,255,.28);box-shadow:0 0 14px rgba(0,0,0,.4)}
+:root[data-forma="jogo"] .pstep.on span{background:linear-gradient(135deg,#34D399,#10B981);border-color:#A7F3D0;color:#04261b;box-shadow:0 0 18px rgba(52,211,153,.7)}
+:root[data-forma="jogo"] .psteps>.pstep.on+.pstep:not(.on) span,:root[data-forma="jogo"] .psteps>.pstep:first-child:not(.on) span{border-color:#FDE047;box-shadow:0 0 0 3px rgba(253,224,71,.22),0 0 22px rgba(250,204,21,.75)}
+:root[data-forma="jogo"] .psteps>.pstep.on+.pstep:not(.on) span::after,:root[data-forma="jogo"] .psteps>.pstep:first-child:not(.on) span::after{content:'👑';position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:18px;line-height:1}
+:root[data-forma="jogo"] .pstep small{color:var(--ink2)}
+
+/* missão de hoje: barra com baú do tesouro */
+.mission{display:none}
+:root[data-forma="jogo"] .mission{display:block;margin-top:16px}
+.mission .mtop{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink2);font-weight:700}
+.mission .mtop b{color:#fde68a}
+.mission .mrow{display:flex;align-items:center;gap:10px;margin-top:6px}
+.mission .mbarr{flex:1;height:14px;border-radius:999px;background:rgba(148,163,184,.22);border:1px solid rgba(255,255,255,.2)}
+.mission .mbarr i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#ec4899,#f59e0b,#34d399);box-shadow:0 0 12px rgba(52,211,153,.55);min-width:6px}
+.mission .bau{flex:none;width:42px;height:36px;filter:drop-shadow(0 0 8px rgba(250,204,21,.55))}
+.mission.cheio .bau{filter:drop-shadow(0 0 14px rgba(250,204,21,.95))}
+@media (prefers-reduced-motion:no-preference){
+  .mission .mbarr i{transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .mission.cheio .bau{animation:mascote 1.4s ease-in-out infinite}
+}
+
+/* controles numéricos: esferas táteis e visor digital */
+:root[data-forma="jogo"] .stpbtn{width:60px;height:60px;border-radius:50%;border:2px solid rgba(255,255,255,.4);font-size:34px;font-weight:800;color:#fff;line-height:1;box-shadow:0 10px 20px -8px rgba(0,0,0,.7),inset 0 3px 6px rgba(255,255,255,.4),inset 0 -7px 12px rgba(0,0,0,.28)}
+:root[data-forma="jogo"] .stpbtn[data-d="-1"]{background:radial-gradient(circle at 35% 28%,#7dd3fc,#2563eb 72%);box-shadow:0 0 18px rgba(59,130,246,.55),0 10px 20px -8px rgba(0,0,0,.7),inset 0 3px 6px rgba(255,255,255,.4),inset 0 -7px 12px rgba(0,0,0,.28)}
+:root[data-forma="jogo"] .stpbtn[data-d="1"]{background:radial-gradient(circle at 35% 28%,#6ee7b7,#059669 72%);box-shadow:0 0 18px rgba(52,211,153,.6),0 10px 20px -8px rgba(0,0,0,.7),inset 0 3px 6px rgba(255,255,255,.4),inset 0 -7px 12px rgba(0,0,0,.28)}
+:root[data-forma="jogo"] .stpbtn:active{transform:scale(.92)}
+:root[data-forma="jogo"] .stpbox input{width:96px;height:60px;border-radius:18px;background:#070b1a;color:#7CFFB2;font:800 36px/1 ui-monospace,Consolas,'Courier New',monospace;letter-spacing:2px;text-shadow:0 0 12px rgba(124,255,178,.85);border:2px solid rgba(124,255,178,.35);box-shadow:inset 0 0 18px rgba(0,0,0,.85),0 0 16px rgba(124,255,178,.25)}
+:root[data-forma="jogo"] .card:has(#fVisitas)>h2::after{content:'Combo de Visitas 🔥';margin-left:auto;font:700 12px var(--body);padding:7px 12px;border-radius:999px;border:1px solid rgba(251,146,60,.65);background:rgba(251,146,60,.14);color:#fdba74;white-space:nowrap}
+:root[data-forma="jogo"] .money{border-radius:20px;background:rgba(20,20,24,.7);border-color:rgba(255,255,255,.22)}
+
+/* avatares coloridos e etiqueta de status nos botões de supervisor e vendedor */
+.av,.tagativo{display:none}
+:root[data-forma="jogo"] .av{display:inline-grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;margin-right:8px;font:800 14px var(--display);color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
+:root[data-forma="jogo"] .chip .em{display:none}
+:root[data-forma="jogo"] #chipsSup .chip[aria-pressed="true"] .tagativo{display:inline-block;position:absolute;top:-10px;right:8px;font:800 10px var(--body);padding:3px 9px;border-radius:999px;background:#34D399;color:#04261b;box-shadow:0 0 12px rgba(52,211,153,.7);z-index:2}
+:root[data-forma="jogo"] .chip{display:inline-flex;align-items:center}
+</style>
 <header class="top"><div class="wrap topin">
-  <div><p class="eyebrow">Supervisão de vendas · Sorocaba, Londrina e Curitiba</p><h1>Relatório de Supervisão</h1></div>
+  <div><p class="eyebrow">Supervisão de vendas · Sorocaba, Londrina e Curitiba</p><h1>Gestão à Vista</h1></div>
   <button id="btnCfg" class="iconbtn" type="button" aria-label="Configurações">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
   </button>
@@ -846,6 +1026,10 @@ button.drill:hover{border-color:var(--teal)}
   <div id="mBody"></div>
 </section>
 
+<section id="tabMetas" hidden>
+  <div id="mtBody"></div>
+</section>
+
 <section id="tabVL" hidden>
   <div id="vlBody"></div>
 </section>
@@ -898,9 +1082,9 @@ button.drill:hover{border-color:var(--teal)}
     <div id="cMetas"></div>
   </div>
   <div class="card" id="cBonusBox" hidden>
-    <h2>🆕 Bônus de aberturas</h2>
-    <p class="hint">Pontos extras para o vendedor que mais fizer aberturas em cada franquia no mês, nas saídas com supervisor. Cada franquia tem o seu vencedor. Use 5 (padrão) ou outro valor, por exemplo 3. Com 0, o bônus fica desligado.</p>
-    <div class="field"><label class="lbl" for="cBonus">Pontos extras por franquia</label><input id="cBonus" type="text" inputmode="numeric" maxlength="2" placeholder="5" autocomplete="off"></div>
+    <h2>🏁 Campeão de aberturas</h2>
+    <p class="hint">Pontos extras para o vendedor que mais abrir clientes em cada franquia no mês (pelo acumulado da aba Metas). Cada franquia tem o seu campeão; em caso de empate, todos ganham. Use 5 (padrão) ou outro valor, como 3 ou 0,5. Com 0, o extra fica desligado.</p>
+    <div class="field"><label class="lbl" for="cBonus">Pontos do campeão por franquia</label><input id="cBonus" type="text" inputmode="decimal" maxlength="4" placeholder="5" autocomplete="off"></div>
   </div>
   <div class="card">
     <h2>Supervisores</h2>
@@ -958,9 +1142,12 @@ button.drill:hover{border-color:var(--teal)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Semana</button>
       <button type="button" class="tab" role="tab" data-tab="mes" aria-selected="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mês</button>
+      <button type="button" class="tab" role="tab" data-tab="metas" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>Metas</button>
     </nav>
     <nav class="tabs" id="vTabs" role="tablist" aria-label="Menu do vendedor" hidden>
       <button type="button" class="tab" role="tab" data-vtab="tarefas" aria-selected="true"><span class="tabemo">📋</span>Tarefas</button>
+      <button type="button" class="tab" role="tab" data-vtab="agenda" aria-selected="false"><span class="tabemo">🗓️</span>Agenda</button>
       <button type="button" class="tab" role="tab" data-vtab="fotos" aria-selected="false"><span class="tabemo">📸</span>Eventos</button>
       <button type="button" class="tab" role="tab" data-vtab="aval" aria-selected="false"><span class="tabemo">⭐</span>Avaliar</button>
       <button type="button" class="tab" role="tab" data-vtab="sair" aria-selected="false"><span class="tabemo">🚪</span>Sair</button>
@@ -1068,7 +1255,7 @@ function montar(){
     h('button',{type:'button',id:'authGo',class:'btn primary',text:entrar?'Entrar':'Criar meu acesso',onclick:entrar?login:primeiroAcesso}));
   if(entrar)form.append(h('p',{class:'hint authnote',text:'Esqueceu a senha? Peça ao gerente para criar uma senha nova para você.'}));
   view.append(h('div',{class:'card authcard'},
-    h('div',{class:'authhead'},h('img',{src:'icon-192.png',alt:''}),h('h1',{text:'Relatório de Supervisão'}),h('small',{text:'Sorocaba · Londrina · Curitiba'})),
+    h('div',{class:'authhead'},h('img',{src:'icon-192.png',alt:''}),h('h1',{text:'Gestão à Vista'}),h('small',{text:'Sorocaba · Londrina · Curitiba'})),
     h('div',{class:'authtabs'},
       h('button',{type:'button','aria-pressed':String(entrar),text:'Entrar',onclick:()=>{tab='entrar';montar();}}),
       h('button',{type:'button','aria-pressed':String(!entrar),text:'Primeiro acesso',onclick:()=>{tab='primeiro';montar();}})),
@@ -1186,7 +1373,20 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('online',()=>subs.forEach(s=>s.run(false)));
 
 const snapDe=rows=>({docs:rows.map(r=>({id:r.id,exists:true,data:()=>r.data}))});
+/* vendedor: não lê a configuração inteira (telefones, listas da equipe, metas); recebe só a parte pública */
+function cfgVendedor(){
+  const um=async()=>{const d=await rpc('config_publica');return d?[{id:'geral',updated_at:JSON.stringify(d),data:d}]:[];};
+  const wrap=rows=>{const x=rows[0];return {id:'geral',exists:!!x,data:()=>x?x.data:undefined};};
+  return {
+    id:'geral',
+    async get(){return wrap(await um());},
+    async set(){throw wrapErr({code:'42501',message:'permission denied'});},
+    async delete(){throw wrapErr({code:'42501',message:'permission denied'});},
+    onSnapshot(cb,err){return assinar({col:'config',cb:cb,err:err,fetch:um,wrap:wrap});}
+  };
+}
 function docRef(path){
+  if(path==='config/geral'&&API.perfil&&API.perfil.papel==='vendedor')return cfgVendedor();
   const i=path.lastIndexOf('/'),col=path.slice(0,i),id=path.slice(i+1);
   const um=leve=>{
     return sb.from('docs').select(leve?'id,updated_at':'id,data,updated_at').eq('collection',col).eq('id',id).then(r=>{
@@ -1270,6 +1470,45 @@ const IC={
   '📸':S('<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/>'),
   '🚪':S('<path d="M10 4H6a2 2 0 00-2 2v12a2 2 0 002 2h4"/><path d="M15 8l4 4-4 4M19 12H9"/>')
 };
+/* tema Jogo: avatares nos botões de supervisor e vendedor (só aparecem no tema Jogo, por CSS) */
+const CORES_AV=['#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#14b8a6','#a855f7'];
+function corAv(nome){let h=0;for(let i=0;i<nome.length;i++)h=(h*31+nome.charCodeAt(i))>>>0;return CORES_AV[h%CORES_AV.length];}
+const RX_EMO=/^((?:\p{Extended_Pictographic}️?(?:‍\p{Extended_Pictographic}️?)*)+)\s*(.+)$/u;
+function decorarChips(){
+  document.querySelectorAll('#chipsSup .chip:not(.add),#chipsVend .chip:not(.add)').forEach(c=>{
+    if(c.dataset.av||c.querySelector('input'))return;
+    const n=c.firstChild;
+    if(!n||n.nodeType!==3)return;
+    const m=RX_EMO.exec(n.textContent.trim());
+    const nome=(m?m[2]:n.textContent).trim();
+    if(!nome)return;
+    c.dataset.av='1';
+    const av=document.createElement('span');av.className='av';av.textContent=nome.charAt(0).toUpperCase();av.style.setProperty('background',corAv(nome));
+    const resto=document.createTextNode(nome);
+    c.textContent='';
+    if(m){const em=document.createElement('span');em.className='em';em.textContent=m[1]+' ';c.append(em);}
+    c.append(av,resto);
+    if(c.closest('#chipsSup')){const t=document.createElement('span');t.className='tagativo';t.textContent='● Ativo';c.append(t);}
+  });
+}
+/* tema Jogo: missão de hoje (barra de progresso com baú do tesouro) */
+const BAU='<svg class="bau" viewBox="0 0 48 40" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs><path d="M5 18a19 12 0 0 1 38 0z" fill="url(#bg1)" stroke="#78350f" stroke-width="2"/><rect x="5" y="18" width="38" height="18" rx="3" fill="#d97706" stroke="#78350f" stroke-width="2"/><rect x="21" y="16" width="6" height="9" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="1.5"/><circle cx="24" cy="21" r="1.6" fill="#78350f"/><path d="M12 18v18M36 18v18" stroke="#78350f" stroke-width="2"/></svg>';
+function missao(){
+  const prog=document.getElementById('prog');
+  if(!prog||!prog.querySelector('.psteps'))return;
+  const total=prog.querySelectorAll('.pstep').length||6,feitas=prog.querySelectorAll('.pstep.on').length;
+  let m=prog.querySelector('.mission');
+  if(!m){
+    m=document.createElement('div');m.className='mission';
+    m.innerHTML='<div class="mtop"><span>Nível de Progresso Diário</span><b class="mtxt"></b></div><div class="mrow"><div class="mbarr"><i></i></div>'+BAU+'</div>';
+    prog.append(m);
+  }
+  const falta=total-feitas;
+  m.classList.toggle('cheio',falta===0);
+  const tx=falta===0?'Missão cumprida! 🎉':'Missão de hoje: '+falta+(falta===1?' etapa!':' etapas!'),alvo=m.querySelector('.mtxt');
+  if(alvo.textContent!==tx)alvo.textContent=tx;   /* só escreve se mudou, senão o observador dispara de novo sem parar */
+  m.querySelector('i').style.setProperty('width',Math.max(4,Math.round(feitas/total*100))+'%');
+}
 let agendado=false;
 function converter(){
   agendado=false;
@@ -1278,6 +1517,7 @@ function converter(){
     const t=(e.textContent||'').replace(/️/g,'').trim();
     if(t&&IC[t])e.innerHTML=IC[t];
   });
+  decorarChips();missao();
 }
 const obs=new MutationObserver(()=>{if(!agendado){agendado=true;Promise.resolve().then(converter);}});
 obs.observe(document.body,{childList:true,subtree:true,characterData:true});
@@ -1350,6 +1590,7 @@ function boasVindas(forcar){
 window.__supa=window.__supa||{};
 window.__supa.boasVindas=boasVindas;
 window.__supa.confete=confete;
+window.__supa.masc=MASC;
 if(window.__supa.ready)window.__supa.ready.then(()=>setTimeout(()=>boasVindas(false),700));
 })();
 </script>
@@ -1409,7 +1650,7 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTi
 const DEF_CFG={supervisores:['Urbano','Pires'],franquias:['Sorocaba','Londrina','Curitiba'],
   vendedores:{Sorocaba:[],Londrina:[],Curitiba:['Andressa','Márcio','Luciano','Igor','Danilo']},
   regioes:{Sorocaba:[],Londrina:[],Curitiba:['Centro','Santa Felicidade','Água Verde','Batel','Portão','Boqueirão']},
-  whatsapp:'',email:'',gerente:'Rodrigo',telefones:{},pins:{},bonusAbertura:5,generos:{},metasMes:{}};
+  whatsapp:'',email:'',gerente:'Rodrigo',telefones:{},pins:{},campeaoAbertura:5,generos:{},metasMes:{}};
 function normCfg(c){
   const o=Object.assign(JSON.parse(JSON.stringify(DEF_CFG)),JSON.parse(JSON.stringify(c||{})));
   ['vendedores','regioes'].forEach(k=>{
@@ -1424,7 +1665,7 @@ function normCfg(c){
   if(!o.metasMes||typeof o.metasMes!=='object')o.metasMes={};
   return o;
 }
-const SUGESTOES=['Treinar equipe','Agendar nova visita','Resolver inadimplência','Café com Aneto','Dia da beleza','Rodada de mesa de negócios'];
+const SUGESTOES=['Treinar equipe','Agendar nova visita','Resolver inadimplência','Café com Aneethun','Dia da beleza','Rodada de mesa de negócios'];
 const PERIODOS={manha:'manhã',tarde:'tarde',dia:'dia todo'};
 const blankForm=()=>({supervisor:LS.get('rs_sup',''),franquia:LS.get('rs_fr',''),data:iso(new Date()),periodo:'dia',horas:8,vendedores:[],aval:{},prazoPassos:iso(addDays(new Date(),3)),regiao:'',visitas:0,pedidos:0,aberturas:0,valor:0,meta:0,oportunidades:[],proximos:[],agenda:[],plano:false,motivo:'',nota:''});
 const S={tab:'nova',recs:[],cfg:JSON.parse(JSON.stringify(DEF_CFG)),form:blankForm(),editingId:null,
@@ -1464,7 +1705,7 @@ async function initStore(){
     S.boot=!S.vend&&!!LS.get('rs_lockhint',false);
     if(S.boot)setTimeout(()=>{if(S.boot){S.boot=false;renderAll();}},7000);
     db.collection('saidas').orderBy('data','desc').limit(1000).onSnapshot(snap=>{
-      S.recs=snap.docs.map(d=>normRec(Object.assign(JSON.parse(JSON.stringify(d.data())),{id:d.id})));
+      S.recs=agSplit(snap.docs.map(d=>normRec(Object.assign(JSON.parse(JSON.stringify(d.data())),{id:d.id}))));
       S.recsOk=true;
       renderAll();
     },err=>{S.dbError=err&&err.code;renderAll();});
@@ -1484,7 +1725,7 @@ async function initStore(){
     if(uns)resolveIdentity(uns);
   }else{
     S.mode='local';
-    S.recs=LS.get('rs_saidas',[]).map(normRec);
+    S.recs=agSplit(LS.get('rs_saidas',[]).map(normRec));
     S.cfg=normCfg(LS.get('rs_config',{}));
     S.fotos=LS.get('rs_fotos',[]);S.avalSup=LS.get('rs_avalsup',[]);S.recsOk=true;
   }
@@ -1574,7 +1815,11 @@ function oppsOf(rs){
   rs.forEach(r=>(r.oportunidades||[]).forEach((o,i)=>out.push(Object.assign({},o,{rid:r.id,idx:i,rec:r}))));
   return out;
 }
-const inRange=(rs,a,b)=>rs.filter(r=>r.data>=a&&r.data<=b);
+const inRange=(rs,a,b)=>{
+  const out=rs.filter(r=>r.data>=a&&r.data<=b);
+  if(rs===S.recs)out.agDocs=(S.agDocs||[]).map(d=>Object.assign({},d,{tarefas:(d.tarefas||[]).filter(t=>t.prazo>=a&&t.prazo<=b)})).filter(d=>d.tarefas.length);
+  return out;
+};
 const diffDays=(s)=>Math.round((parseISO(s)-today())/86400000);
 function retornoBadge(ret){
   if(!ret)return {t:'sem data',c:''};
@@ -1596,6 +1841,7 @@ function tarefasOf(r){return Array.isArray(r.tarefas)?r.tarefas:[];}
 function allTarefas(rs){
   const out=[];
   rs.forEach(r=>tarefasOf(r).forEach((t,i)=>out.push(Object.assign({},t,{rid:r.id,ti:i,rec:r}))));
+  ((rs===S.recs?S.agDocs:rs.agDocs)||[]).forEach(r=>tarefasOf(r).forEach((t,i)=>out.push(Object.assign({},t,{rid:r.id,ti:i,rec:r}))));
   return out;
 }
 function tarefaVend(t){return t.vendedores&&t.vendedores.length?t.vendedores:(t.rec&&t.rec.vendedores)||[];}
@@ -1645,7 +1891,7 @@ function oppForTask(r,x){
 function taskForOpp(r,o){
   return (r.tarefas||[]).find(y=>y.tipo==='prospeccao'&&y.texto===oppNm(o.cliente))||null;
 }
-/* Compromissos que fecham sem foto; todos os outros (Treinar equipe, Café com Aneto, Dia da beleza, Rodada de mesa de negócios...) exigem foto do local. */
+/* Compromissos que fecham sem foto; todos os outros (Treinar equipe, Café com Aneethun, Dia da beleza, Rodada de mesa de negócios...) exigem foto do local. */
 const SEM_FOTO=['agendar nova visita','resolver inadimplencia'];
 const normTxt=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
 const tipoPasso=t=>normTxt(String(t.texto||'').split(' — ')[0]);
@@ -1665,7 +1911,7 @@ function taskCard(t,showTipo){
     showTipo?el('span',{class:'badge',text:ag?'🎯 Prospecção':'📅 Compromisso'}):null,
     el('div',{class:'tasktxt',text:(ag?'🎯 ':'📅 ')+t.texto}),
     t.detalhe?el('small',{text:(ag?'Contato: ':'Motivo: ')+t.detalhe}):null,
-    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),vistoBadge(t),el('small',{text:(rec.franquia||'')+' · saída de '+dm(rec.data)+(rec.supervisor?' · '+rec.supervisor:'')})));
+    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),vistoBadge(t),el('small',{text:(rec.franquia||'')+' · '+agOrigem(rec)+(rec.supervisor?' · '+rec.supervisor:'')})));
   const b=el('div',{class:'opbtns'});
   if(!done){
     b.append(el('button',{type:'button',class:'btn sm primary',text:ag?'✅ Visita feita':'✅ Feito',onclick:()=>setTarefa(t,'feito')}));
@@ -1675,6 +1921,7 @@ function taskCard(t,showTipo){
     b.append(el('button',{type:'button',class:'btn sm',text:'Reabrir',onclick:()=>setTarefa(t,'pendente')}));
   }
   c.append(b);
+  if(t.origem==='agenda-mes'||t.pedido)agSupExtra(t,c);
   return c;
 }
 const BUCKETS=[['🔴','Atrasadas'],['🟡','Hoje'],['🟡','Amanhã'],['🔵','Esta semana'],['🟢','Mais adiante'],['⚪','Sem data']];
@@ -1692,10 +1939,11 @@ function kanbanCard(t,opt){
     opt&&opt.noWho?null:who,
     el('div',{class:'ktask',text:(ag?'🎯 ':'📅 ')+t.texto}),
     t.detalhe?el('small',{text:(ag?'Contato: ':'Motivo: ')+t.detalhe}):null,
-    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),vistoBadge(t),el('small',{text:(rec.franquia||'')+' · saída de '+dm(rec.data)})));
+    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),vistoBadge(t),el('small',{text:(rec.franquia||'')+' · '+agOrigem(rec)})));
   const b=el('div',{class:'opbtns'});
   b.append(el('button',{type:'button',class:'btn sm primary',text:ag?'✅ Visita feita':'✅ Feito',onclick:()=>setTarefa(t,'feito')}));
   c.append(b);
+  if(t.origem==='agenda-mes'||t.pedido)agSupExtra(t,c);
   return c;
 }
 function vavatar(name){
@@ -1790,51 +2038,8 @@ function pendFeitas(body,list){
 const CLASSES=[[9,'🏆 Craque'],[8,'⭐ Destaque'],[7,'👍 No ritmo'],[6,'📈 Em evolução'],[0,'🔔 Precisa de atenção']];
 const classeDe=n=>(CLASSES.find(c=>n>=c[0])||CLASSES[CLASSES.length-1])[1];
 const MEDALHAS=['🥇','🥈','🥉'];
-const bonusValor=()=>S.cfg.bonusAbertura==null?5:Math.max(0,+S.cfg.bonusAbertura||0);
-/* Nota final do vendedor (0 a 10): vendas 30% + aberturas 20% (em relação ao melhor do mês) + compromissos 25% (pontuação extra ou % cumprido)
-   + avaliação dos supervisores 25%. O que não existe no mês (por exemplo, sem avaliação) sai da conta e os pesos se reajustam. */
-function vendRank(rs){
-  const m=new Map();
-  rs.forEach(r=>{
-    const k=r.vendedores.length||1;
-    r.vendedores.forEach(v=>{
-      const o=m.get(v)||{key:v,fr:{},valor:0,aberturas:0,pedidos:0,visitas:0,horas:0,n:0};
-      o.fr[r.franquia||'']=(o.fr[r.franquia||'']||0)+1;
-      o.valor+=(r.valor||0)/k;o.aberturas+=(r.aberturas||0)/k;o.pedidos+=(r.pedidos||0)/k;o.visitas+=(r.visitas||0)/k;o.horas+=(horasOf(r)||0);o.n++;
-      m.set(v,o);
-    });
-  });
-  const nv=new Map(notasVend(rs).map(x=>[x.key,x.media])),tv=new Map(tarefasStats(rs).vend.map(x=>[x.key,x])),ex=new Map(extraPontos(rs).map(x=>[x.key,x.score]));
-  const list=[...m.values()].map(o=>{
-    const t=tv.get(o.key),fr=Object.entries(o.fr).sort((a,b)=>b[1]-a[1])[0];
-    return Object.assign(o,{franquia:fr?fr[0]:'',nota:nv.has(o.key)?nv.get(o.key):null,taxa:t&&t.n?t.ok/t.n:null,tn:t?t.n:0,extra:ex.has(o.key)?ex.get(o.key):null});
-  });
-  /* bônus de aberturas: quem mais abriu clientes em cada franquia ganha os pontos extras (empate: todos os empatados ganham) */
-  const B=bonusValor(),topFr=new Map();
-  list.forEach(o=>{const k=o.franquia||'',a=Math.round(o.aberturas*100)/100;if(a>(topFr.get(k)||0))topFr.set(k,a);});
-  list.forEach(o=>{o.bonus=(B>0&&Math.round(o.aberturas*100)/100>0&&Math.round(o.aberturas*100)/100===topFr.get(o.franquia||''))?B:0;o.pe=(o.extra||0)+o.bonus;});
-  const mxV=Math.max(0,...list.map(o=>o.valor)),mxA=Math.max(0,...list.map(o=>o.aberturas));
-  list.forEach(o=>{
-    const parts=[[0.30,mxV>0?o.valor/mxV*10:0],[0.20,mxA>0?o.aberturas/mxA*10:0]];
-    const c=o.extra!=null?o.extra*2:(o.taxa!=null?o.taxa*10:null);
-    if(c!=null)parts.push([0.25,c]);
-    if(o.nota!=null)parts.push([0.25,o.nota]);
-    const w=parts.reduce((s,p)=>s+p[0],0);
-    o.final=Math.round(parts.reduce((s,p)=>s+p[0]*p[1],0)/w*10)/10;
-    o.classe=classeDe(o.final);
-  });
-  list.sort((a,b)=>b.final-a.final||b.valor-a.valor);
-  list.forEach((o,i)=>{o.pos=i+1;});
-  return list;
-}
+const bonusValor=()=>S.cfg.campeaoAbertura==null?5:Math.max(0,+S.cfg.campeaoAbertura||0);
 const top3=(list,fn)=>list.map(o=>({key:o.key,val:fn(o)})).filter(x=>x.val!=null&&x.val>0).sort((a,b)=>b.val-a.val).slice(0,3);
-const PODIOS=[
-  ['💰','Maior venda',o=>o.valor,v=>fmtBRL(v)],
-  ['🆕','Mais aberturas',o=>o.aberturas,v=>fmtInt(Math.round(v))+(Math.round(v)===1?' abertura':' aberturas')],
-  ['✅','Compromissos cumpridos',o=>o.taxa,v=>fmtPct(v)],
-  ['⭐','Melhor nota dos supervisores',o=>o.nota,v=>fmt1(v)+' / 10'],
-  ['🏅','Nota final do mês',o=>o.final,v=>fmt1(v)+' / 10']
-];
 function podiumBox(emo,title,rows,fmt){
   const c=el('div',{class:'pod'},el('div',{class:'podt'},el('span',{text:emo}),el('b',{text:title})));
   if(!rows.length){c.append(el('small',{class:'hint',text:'Sem dados no período.'}));return c;}
@@ -1868,57 +2073,13 @@ function sendBox(key,title,text,acts,hint){
   d.append(inner);
   return d;
 }
-function rankRows(list){
-  const box=el('div',{class:'rankl'});
-  list.forEach(o=>box.append(el('div',{class:'rankr'},
-    el('b',{class:'rpos',text:(o.pos<=3?MEDALHAS[o.pos-1]:o.pos+'º')}),
-    el('div',{class:'rwho'},el('b',{text:o.key}),el('small',{text:(o.franquia||'')+' · '+fmtBRL(o.valor)+' · '+fmtInt(Math.round(o.aberturas))+' aberturas'+(o.taxa!=null?' · '+fmtPct(o.taxa)+' cumprido':'')+(o.bonus>0?' · 🆕 +'+o.bonus+' extras':'')})),
-    el('div',{class:'rnote'},el('b',{text:fmt1(o.final)}),el('small',{text:o.classe})))));
-  return box;
-}
-function destaquesCard(body,key,rsAll,f){
-  if(!isGer())return;
-  const c=card('🏆 Destaques do mês','Pódio, nota final e classificação dos vendedores. Visível só para o gerente.');
-  body.append(c);
-  if(!extraRevealed(key)){
-    c.append(el('p',{class:'hint',text:'🔒 Revelado no fechamento do mês (em '+dm(nextKey(key)+'-01')+'). O app já está somando vendas, aberturas, compromissos e avaliações.'}),
-      el('button',{type:'button',class:'btn sm',text:'Ver prévia agora',onclick:()=>{S.revealExtra=true;renderMes();}}));
-    return;
-  }
-  const rank=vendRank(rsAll);
-  if(!rank.length){c.append(el('p',{class:'hint',text:'Ainda não há vendedores com saídas neste mês.'}));return;}
-  if(f.v){
-    const o=rank.find(x=>x.key===f.v);
-    if(!o){c.append(el('p',{class:'hint',text:'Sem dados de '+f.v+' neste mês.'}));return;}
-    c.append(el('div',{class:'bignote'},el('b',{text:fmt1(o.final)}),el('span',{text:o.classe})),
-      el('p',{class:'hint',text:o.key+' ficou em '+o.pos+'º de '+rank.length+' vendedores no mês.'+(o.bonus>0?' 🆕 Ganhou o bônus de aberturas da franquia '+o.franquia+': +'+o.bonus+' pontos extras.':'')}));
-    const b=el('div');c.append(b);
-    const mxV=Math.max(1,...rank.map(x=>x.valor)),mxA=Math.max(1,...rank.map(x=>x.aberturas));
-    barRows(b,[
-      {label:'💰 Vendas',value:o.valor/mxV*10,max:10,sub:fmtBRL(o.valor)+' (o melhor do mês vale 10)'},
-      {label:'🆕 Aberturas',value:o.aberturas/mxA*10,max:10,sub:fmtInt(Math.round(o.aberturas))+' no mês (o melhor do mês vale 10)'},
-      {label:'✅ Compromissos',value:o.extra!=null?o.extra*2:(o.taxa!=null?o.taxa*10:0),max:10,sub:o.taxa!=null?fmtPct(o.taxa)+' cumpridos'+(o.extra!=null?' · pontuação extra '+fmt1(o.extra)+' de 5':''):'Sem compromissos'},
-      {label:'⭐ Avaliação dos supervisores',value:o.nota!=null?o.nota:0,max:10,sub:o.nota!=null?fmt1(o.nota)+' / 10':'Sem avaliação'}
-    ],v=>fmt1(v)+' / 10');
-    return;
-  }
-  const scope=f.fr?rank.filter(o=>o.franquia===f.fr):rank;
-  c.append(el('p',{class:'hint',text:(f.fr?'Pódio de '+f.fr:'Pódio geral, com todos os vendedores')+'. Se a saída tem 2 vendedores, os números são divididos.'}));
-  podiumSet(scope).forEach(p=>c.append(p));
-  if(!f.fr){
-    const frs=[...new Set(rank.map(o=>o.franquia).filter(Boolean))];
-    frs.forEach(fr=>c.append(foldBox('dest-'+fr,'🏪 Pódio de '+fr,podiumSet(rank.filter(o=>o.franquia===fr)))));
-  }
-  c.append(foldBox('dest-rank'+(f.fr||''),'📋 Classificação com nota final'+(f.fr?' · '+f.fr:''),[rankRows(scope.map((o,i)=>Object.assign({},o,{pos:i+1})))]));
-  c.append(el('p',{class:'hint',text:'Como a nota final é calculada (0 a 10): vendas 30% e aberturas 20% em relação ao melhor do mês, compromissos 25% (pontuação extra) e avaliação dos supervisores 25%. Classes: 9 a 10 Craque, 8 a 8,9 Destaque, 7 a 7,9 No ritmo, 6 a 6,9 Em evolução, abaixo de 6 Precisa de atenção.'}));
-}
 /* produção dos supervisores */
 const SUP_AX=[['v','💰','Vendas'],['a','🆕','Aberturas'],['c','📈','Conversão'],['h','⏱️','Horas em campo'],['t','🤝','Cumprimento'],['n','⭐','Avaliação dos vendedores']];
 function supStats(rs,key){
   const m=new Map();
   rs.forEach(r=>{if(!r.supervisor)return;const o=m.get(r.supervisor)||{key:r.supervisor,recs:[]};o.recs.push(r);m.set(r.supervisor,o);});
   const list=[...m.values()].map(o=>{
-    const a=agg(o.recs),ts=tarefasStats(o.recs);
+    o.recs.agDocs=(rs.agDocs||[]).filter(d=>d.supervisor===o.key);const a=agg(o.recs),ts=tarefasStats(o.recs);
     const av=S.avalSup.filter(x=>x.supervisor===o.key&&String(x.em||'').startsWith(key));
     const nd=notasVend(o.recs);
     return {key:o.key,n:a.n,valor:a.valor,aberturas:a.aberturas,conv:a.conv,horas:a.horas,visitas:a.visitas,pedidos:a.pedidos,
@@ -2017,7 +2178,13 @@ function supBar(body,f,items,rerender){
   c.append(row);
   body.append(c);
 }
-function applyFil(items,f){return items.filter(r=>(!f.fr||r.franquia===f.fr)&&(!f.v||r.vendedores.includes(f.v)));}
+function applyFil(items,f){
+  const ok=r=>(!f.fr||r.franquia===f.fr)&&(!f.v||r.vendedores.includes(f.v));
+  const out=items.filter(ok);
+  if(items.agDocs)out.agDocs=items.agDocs.filter(ok);
+  if(items.resDocs)out.resDocs=items.resDocs.filter(ok);
+  return out;
+}
 function filBar(body,tab,items,rerender,unit){
   const f=filOf(tab);
   const c=el('div',{class:'card filcard'});
@@ -2056,7 +2223,7 @@ function togBtn(body,f,key,rerender,onTxt,offTxt){
   body.append(el('button',{type:'button',class:'btn togbtn',text:f[key]?offTxt:onTxt,onclick:()=>{f[key]=!f[key];rerender();}}));
 }
 function renderPend(){
-  const body=$('#pBody');body.textContent='';
+  const body=$('#pBody');body.textContent='';agCard(body);
   const all=allTarefas(S.recs),ag=all.filter(t=>t.tipo==='prospeccao'),ds=all.filter(t=>t.tipo!=='prospeccao');
   const op=l=>l.filter(t=>t.status!=='feito'),dn=l=>l.filter(t=>t.status==='feito');
   const view=S.pendF==='agenda'||S.pendF==='feito'||S.pendF==='fotos'?S.pendF:'prosp';
@@ -2077,7 +2244,7 @@ function renderPend(){
   else pendFeitas(body,lst);
 }
 function msgCobranca(t,v){
-  const r=t.rec,pb=prazoBadge(t.prazo,t.status),L=['Olá, '+safe(v)+'! Aqui é o '+safe(r.supervisor||'seu supervisor')+'.',(t.tipo==='prospeccao'?'Lembrete da visita combinada':'Lembrete do compromisso combinado')+' na saída de '+dm(r.data)+':','','*'+safe(t.texto)+'*'+(t.detalhe?(t.tipo==='prospeccao'?' ('+t.detalhe+')':'\nMotivo: '+safe(t.detalhe)):'')];
+  const r=t.rec,pb=prazoBadge(t.prazo,t.status),L=['Olá, '+safe(v)+'! Aqui é o '+safe(r.supervisor||'seu supervisor')+'.',(t.tipo==='prospeccao'?'Lembrete da visita combinada':'Lembrete do compromisso combinado')+' na '+agOrigem(r)+':','','*'+safe(t.texto)+'*'+(t.detalhe?(t.tipo==='prospeccao'?' ('+t.detalhe+')':'\nMotivo: '+safe(t.detalhe)):'')];
   if(t.prazo)L.push('Prazo: *'+dm(t.prazo)+'*'+(pb.c==='bad'?' ('+pb.t+')':''));
   L.push('','Quando concluir, me responda *OK*. Obrigado!');
   return L.join('\n');
@@ -2132,7 +2299,7 @@ function tarefasLines(L,rs){
   const s=tarefasStats(rs);
   if(!s.n)return;
   L.push(SEP,'🟡 *CUMPRIMENTO DAS TAREFAS*',kv('•','Tarefas combinadas',s.n),kv('•','Concluídas',s.ok),kv('•','Pendentes',s.pend),kv('•','Atrasadas',s.late),kv('•','Cumprimento',fmtPct(s.taxa)));
-  const por=fn=>tarefasStats(rs.map(r=>Object.assign({},r,{tarefas:tarefasOf(r).filter(fn)})));
+  const por=fn=>{const x=rs.map(r=>Object.assign({},r,{tarefas:tarefasOf(r).filter(fn)}));x.agDocs=(rs.agDocs||[]).map(d=>Object.assign({},d,{tarefas:tarefasOf(d).filter(fn)}));return tarefasStats(x);};
   const sa=por(t=>t.tipo==='prospeccao'),sdz=por(t=>t.tipo!=='prospeccao');
   L.push('• Prospecção: *'+sa.ok+' de '+sa.n+'*','• Compromissos futuros: *'+sdz.ok+' de '+sdz.n+'*');
   s.vend.forEach(v=>L.push('• '+safe(v.key)+' — *'+fmtPct(v.ok/v.n)+'* ('+v.ok+' de '+v.n+(v.late?' · '+v.late+(v.late>1?' atrasadas':' atrasada'):'')+')'));
@@ -2177,12 +2344,12 @@ function extraLines(L,rs,key){
   }
   const win=vendRank(rs).filter(o=>o.bonus>0);
   if(win.length){
-    L.push(SEP,'🆕 *BÔNUS DE ABERTURAS* (+'+bonusValor()+' pontos extras em cada franquia)');
+    L.push(SEP,'🏁 *CAMPEÃO DE ABERTURAS* (+'+fmtBonus(bonusValor())+' pontos em cada franquia)');
     win.forEach(o=>L.push('• '+safe(o.franquia||'Sem franquia')+': *'+safe(o.key)+'* — '+fmtInt(Math.round(o.aberturas))+(Math.round(o.aberturas)===1?' abertura':' aberturas')));
   }
 }
 function extraCard(body,rs,key,rsAll){
-  const c=card('⭐ Pontuação extra do mês','Bônus de 0 a 5 por cumprir as tarefas no prazo. Soma à qualificação do vendedor.');
+  const c=card('⭐ Pontuação extra do mês','Nota de 0 a 5 por cumprir as tarefas no prazo (agenda do mês, prospecções e compromissos). Vale 25 dos 100 pontos do mês.');
   body.append(c);
   if(!extraRevealed(key)){
     c.append(el('p',{class:'hint',text:'🔒 Oculta até o fechamento do mês (revelada em '+dm(nextKey(key)+'-01')+'). O app acompanha os prazos e os OKs de cada vendedor.'}),
@@ -2195,15 +2362,15 @@ function extraCard(body,rs,key,rsAll){
     const b=el('div');c.append(b);
     barRows(b,ex.map(o=>({label:o.key,value:o.score,max:5,sub:o.label+' · '+o.pontual+' de '+o.n+' tarefas no prazo'})),v=>fmt1(v)+' / 5');
   }
-  const B=bonusValor();
-  if(B>0){
-    const win=vendRank(rsAll||rs).filter(o=>o.bonus>0);
-    const frs=[...new Set(rs.map(r=>r.franquia).filter(Boolean))];
-    c.append(el('p',{class:'hint',text:'🆕 Bônus de aberturas: +'+B+' pontos extras para quem mais abriu clientes em cada franquia, nas saídas com supervisor. Cada franquia tem o seu vencedor; em caso de empate, todos os empatados ganham o bônus.'}));
+  const B=bonusValor(),rk=vendRank(rsAll||rs);
+  if(B>0&&rk.length){
+    const win=rk.filter(o=>o.bonus>0);
+    const frs=[...new Set(rk.map(o=>o.franquia).filter(Boolean))];
+    c.append(el('p',{class:'hint',text:'🏁 Campeão de aberturas: +'+fmtBonus(B)+' pontos na pontuação do mês para quem mais abriu clientes em cada franquia (pelo acumulado da aba Metas). Cada franquia tem o seu campeão; em caso de empate, todos os empatados ganham.'}));
     const lst=el('div',{class:'winners'});
     frs.forEach(fr=>{
       const w=win.filter(o=>o.franquia===fr);
-      lst.append(el('div',{class:'winr'},el('span',{text:'🏪 '+fr}),el('b',{text:w.length?w.map(o=>o.key).join(' e ')+' · '+fmtInt(Math.round(w[0].aberturas))+(Math.round(w[0].aberturas)===1?' abertura':' aberturas')+' · +'+B:'Sem aberturas'})));
+      lst.append(el('div',{class:'winr'},el('span',{text:'🏪 '+fr}),el('b',{text:w.length?w.map(o=>o.key).join(' e ')+' · '+fmtInt(Math.round(w[0].aberturas))+(Math.round(w[0].aberturas)===1?' abertura':' aberturas')+' · +'+fmtBonus(B):'Sem aberturas'})));
     });
     c.append(lst);
   }
@@ -2293,13 +2460,14 @@ function updateRec(id,fn){
     if(S.mode==='db'){
       try{const s=await db.doc('saidas/'+id).get();if(s.exists)base=normRec(Object.assign(JSON.parse(JSON.stringify(s.data())),{id:id}));}catch(e){}
     }
-    if(!base){const b=S.recs.find(x=>x.id===id);if(b)base=JSON.parse(JSON.stringify(b));}
+    if(!base){const b=S.recs.find(x=>x.id===id)||S.agDocs.find(x=>x.id===id);if(b)base=JSON.parse(JSON.stringify(b));}
     if(!base)return;
     fn(base);base.atualizadoEm=Date.now();
     if(S.mode==='db'){await db.doc('saidas/'+id).set(base);}
     S.writeFail=false;
-    const i=S.recs.findIndex(x=>x.id===id);
-    if(i>=0)S.recs[i]=base;else S.recs.push(base);
+    const lst=agIsDoc(base)?S.agDocs:S.recs;
+    const i=lst.findIndex(x=>x.id===id);
+    if(i>=0)lst[i]=base;else lst.push(base);
     if(S.mode!=='db')LS.set('rs_saidas',S.recs);
   });
 }
@@ -2315,8 +2483,8 @@ async function refreshData(manual){
       once(db.collection('fotos').orderBy('em','desc').limit(300)),
       S.vend?Promise.resolve(null):once(db.collection('acessos').orderBy('data','desc').limit(600))]);
     const cl=d=>Object.assign(JSON.parse(JSON.stringify(d.data())),{id:d.id});
-    const rs=parts[0].docs.map(d=>normRec(cl(d))),av=parts[1].docs.map(cl),ft=parts[2].docs.map(cl),ac=parts[3]?parts[3].docs.map(cl):null;
-    const sig=JSON.stringify([rs.map(r=>r.id+':'+(r.atualizadoEm||0)),av.map(x=>x.id),ft.map(x=>x.id),(ac||[]).map(x=>x.id+':'+(x.ultimo||'')+':'+Object.keys(x.vistas||{}).length)]);
+    const rs=agSplit(parts[0].docs.map(d=>normRec(cl(d)))),av=parts[1].docs.map(cl),ft=parts[2].docs.map(cl),ac=parts[3]?parts[3].docs.map(cl):null;
+    const sig=JSON.stringify([rs.concat(S.agDocs,S.resDocs).map(r=>r.id+':'+(r.atualizadoEm||0)),av.map(x=>x.id),ft.map(x=>x.id),(ac||[]).map(x=>x.id+':'+(x.ultimo||'')+':'+Object.keys(x.vistas||{}).length)]);
     S.lastRefresh=Date.now();S.avalErr='';
     if(wpend>0)return;
     if(sig!==S.refSig||manual){S.refSig=sig;S.recs=rs;S.avalSup=av;S.fotos=ft;if(ac)S.acessos=ac;S.recsOk=true;renderAll();}
@@ -2568,9 +2736,11 @@ function vendSequencia(){
 }
 function vendEmblemas(){
   const v=S.vend.name,hoje=iso(new Date()),mk=hoje.slice(0,7),rs=S.recs.filter(r=>String(r.data||'').startsWith(mk));
+  rs.agDocs=(S.agDocs||[]).filter(d=>d.mes===mk);
+  rs.resDocs=(S.resDocs||[]).filter(d=>d.mes===mk);
   const out=[];
-  const rk=vendRank(rs).find(o=>o.key===v);
-  if(rk&&rk.bonus>0)out.push('🆕 Líder de aberturas da franquia');
+  const rd=resDocDe(mk,v);
+  if(rd){const mt=resMetas(rd),fz=resFeito(rd);if(rd.campeao)out.push('🏁 Campeão de aberturas da franquia');if(mt.vendas>0&&fz.vendas>=mt.vendas)out.push('🎯 Meta de vendas batida');if(mt.abA>0&&fz.ab>=mt.abA)out.push('🚀 Abertura acima do normal');}
   if(S.fotos.filter(f=>f.vendedor===v&&String(f.em||'').startsWith(mk)).length>=3)out.push('📸 Mestre das fotos');
   const ts=allTarefas(rs).filter(t=>tarefaVend(t).includes(v));
   const noPrazo=ts.filter(t=>cumprida(t)&&(!t.prazo||!t.okEm||t.okEm<=t.prazo)).length;
@@ -2597,14 +2767,14 @@ function vendGamif(body){
 /* ---------- meta do mês por franquia: foguete e projeção ---------- */
 function metaMesCard(body,rsAll,key,f){
   if(f.v)return;
-  const metas=S.cfg.metasMes||{};
+  const metas=metasFranquia(rsAll,S.cfg.metasMes);
   const frs=(f.fr?[f.fr]:S.cfg.franquias).filter(fr=>(+metas[fr]||0)>0);
   if(!frs.length)return;
   const hj=new Date(),atual=iso(hj).slice(0,7)===key;
   const diasMes=new Date(+key.slice(0,4),+key.slice(5,7),0).getDate(),dec=atual?hj.getDate():diasMes;
   const c=card('🚀 Meta do mês por franquia','O foguete sobe conforme a franquia vende. 🏆 = meta batida.');
   frs.forEach(fr=>{
-    const meta=+metas[fr],vend=rsAll.filter(r=>r.franquia===fr).reduce((s,r)=>s+(r.valor||0),0);
+    const meta=+metas[fr],vend=vendasFranquia(rsAll,fr);
     const pct=vend/meta,pos=Math.max(3,Math.min(100,pct*100));
     const bar=el('div',{class:'rkt'}),bi=el('i'),rk=el('span',{class:'rk',text:pct>=1?'🏆':'🚀'});
     bi.style.setProperty('width','0%');rk.style.setProperty('left','0%');bar.append(bi,rk);
@@ -2893,6 +3063,8 @@ function msgSemana(ws,rs){
 }
 function monthStats(key){
   const rs=S.recs.filter(r=>r.data.startsWith(key));
+  rs.agDocs=(S.agDocs||[]).filter(d=>d.mes===key);
+  rs.resDocs=(S.resDocs||[]).filter(d=>d.mes===key);
   return {rs,a:agg(rs)};
 }
 const prevKey=key=>{const y=+key.slice(0,4),m=+key.slice(5,7);const d=new Date(y,m-2,1);return d.getFullYear()+'-'+pad(d.getMonth()+1);};
@@ -3091,11 +3263,14 @@ function renderConta(){
   c.hidden=!sp;
   if(!sp)return;
   $('#cContaInfo').textContent='Conectado como '+(sp.email||'')+(sp.perfil?' · '+(ROT_PAPEL[sp.perfil.papel]||''):'')+'.';
-  const tema=LS.get('rs_tema','light');
+  const tema=LS.get('rs_tema','game');
   const ct=$('#cTema');ct.textContent='';
-  [['light','☀️ Claro'],['dark','🌙 Escuro'],['auto','📱 Automático']].forEach(([v,t])=>ct.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(tema===v),text:t,onclick:()=>{
+  [['game','🎮 Jogo'],['light','☀️ Claro'],['dark','🌙 Escuro'],['auto','📱 Automático']].forEach(([v,t])=>ct.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(tema===v),text:t,onclick:()=>{
     LS.set('rs_tema',v);
-    if(v==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',v);
+    const H=document.documentElement;
+    if(v==='auto')H.removeAttribute('data-theme');else H.setAttribute('data-theme',v);
+    if(v==='game')H.setAttribute('data-forma','jogo');else H.removeAttribute('data-forma');
+    const mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',v==='game'?'#121214':'#16324F');
     renderConta();}})));
   if(sp.pintarInstalar)sp.pintarInstalar();
 }
@@ -3177,6 +3352,824 @@ function renderAcessos(){
       el('button',{type:'button',class:'btn sm',text:'Trocar código',onclick:async()=>{
         const v=$('#acCodigo').value;
         if(await acAcao('trocar_codigo',{p_novo:v},'Código trocado. Quem ainda vai entrar pela primeira vez precisa do novo código.'))$('#acCodigo').value='';}})));
+}
+/* ---------- agenda do mês: 4 compromissos por vendedor (2 Dia da beleza + 2 Rodada de mesa de negócios) ----------
+   Cada vendedor tem um documento de agenda por mês (saidas/ag-AAAA-MM-nome, tipo 'agenda'). Ele fica fora da lista de saídas
+   (S.recs) para não contar como saída; as tarefas dele entram em allTarefas(S.recs) e seguem o fluxo normal dos compromissos
+   (prazo, foto obrigatória, feito/não feito). O app monta a proposta do mês; o supervisor confere as datas e dá o OK, e só então
+   os compromissos aparecem para o vendedor. Depois o supervisor edita datas e tipos quando quiser.
+   O vendedor vê a própria agenda por semana e por mês (aba Agenda) e pede mudança de data de qualquer compromisso ou visita:
+   o supervisor aprova ou recusa. */
+const AG_PADRAO=['Dia da beleza','Rodada de mesa de negócios','Dia da beleza','Rodada de mesa de negócios'];
+const AG_TIPOS=['Dia da beleza','Rodada de mesa de negócios','Treinar equipe','Café com Aneethun','Agendar nova visita','Resolver inadimplência'];
+Object.assign(S,{agDocs:[],agMes:iso(new Date()).slice(0,7),agOpen:null,agFr:'',agNo:new Set(),agTpl:null,agEd:null,agEm:'',agRec:null,agPed:null,agConf:null,agBusy:false,
+  vagV:'sem',vagW:mondayOf(new Date()),vagM:iso(new Date()).slice(0,7),vagOpen:new Set()});
+const agIsDoc=r=>!!r&&r.tipo==='agenda';
+const agSlug=s=>normTxt(s).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'x';
+const agDocId=(m,v)=>'ag-'+m+'-'+agSlug(v);
+const agMesNome=m=>{const n=MES[+m.slice(5,7)-1];return n[0].toUpperCase()+n.slice(1);};
+const agOrigem=r=>agIsDoc(r)?'agenda de '+agMesNome(r.mes).toLowerCase():'saída de '+dm(r.data);
+const agPode=()=>!S.vend&&!S.me.pending&&(isGer()||!!S.me.sup);
+const agPor=()=>S.me.sup||S.me.name||'Gerente';
+const agBase=t=>String(t||'').split(' — ')[0];
+const agEmo=t=>{const k=tipoPasso({texto:t});return k==='dia da beleza'?'💄':k.startsWith('rodada de mesa')?'🤝':'📅';};
+/* tira da lista os documentos que não são saídas: agenda do mês e metas/resultados (resIsDoc, em pontos.js) */
+function agSplit(list){S.agDocs=list.filter(agIsDoc);S.resDocs=list.filter(resIsDoc);return list.filter(r=>!agIsDoc(r)&&!resIsDoc(r));}
+const agDocsMes=m=>(S.agDocs||[]).filter(d=>d.mes===m);
+const agDocDe=(m,v)=>(S.agDocs||[]).find(d=>d.id===agDocId(m,v));
+/* dias úteis do mês de índice mo, a partir de ini */
+function agDiasUteis(ini,mo){
+  const out=[];
+  for(let d=new Date(ini);d.getMonth()===mo;d=addDays(d,1))if(d.getDay()!==0&&d.getDay()!==6)out.push(iso(d));
+  return out;
+}
+/* datas sugeridas: uma por semana (dias 6, 13, 20 e 27), sábado vira sexta e domingo vira segunda.
+   Em mês já começado, as 4 datas se espalham pelos dias úteis que restam (a partir de depois de amanhã),
+   para a agenda não nascer atrasada. */
+function agPadraoDatas(m){
+  const y=+m.slice(0,4),mo=+m.slice(5,7)-1,hoje=iso(new Date());
+  const base=[6,13,20,27].map(d=>{let x=new Date(y,mo,d);if(x.getDay()===6)x=addDays(x,-1);else if(x.getDay()===0)x=addDays(x,1);return iso(x);});
+  if(m!==hoje.slice(0,7)||base.every(x=>x>=iso(addDays(today(),2))))return base;
+  let fut=agDiasUteis(addDays(today(),2),mo);
+  if(!fut.length)fut=agDiasUteis(today(),mo);
+  if(!fut.length)return base.map(()=>hoje);
+  return [0,1,2,3].map(i=>fut[Math.round(i*(fut.length-1)/3)]);
+}
+function agTpl(m){
+  if(!S.agTpl||S.agTpl.mes!==m){const ds=agPadraoDatas(m);S.agTpl={mes:m,slots:AG_PADRAO.map((t,i)=>({texto:t,prazo:ds[i]}))};}
+  return S.agTpl;
+}
+function agRoster(m){
+  const out=[];
+  S.cfg.franquias.forEach(fr=>(S.cfg.vendedores[fr]||[]).forEach(n=>out.push({n:n,fr:fr})));
+  agDocsMes(m).forEach(d=>{const n=(d.vendedores||[])[0];if(n&&!out.some(x=>x.n===n))out.push({n:n,fr:d.franquia||''});});
+  return out;
+}
+/* pedidos de mudança de data esperando o supervisor (agenda do mês, compromissos e visitas) */
+function agPedidos(){
+  return allTarefas(S.recs).filter(t=>t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito').sort((a,b)=>(a.pedido.em||'')<(b.pedido.em||'')?-1:1);
+}
+function agResumo(d){
+  const ts=d.tarefas||[];
+  return {n:ts.length,ok:ts.filter(cumprida).length,nao:ts.filter(naoFeita).length,
+    late:ts.filter(t=>t.status!=='feito'&&t.prazo&&diffDays(t.prazo)<0).length,
+    ped:ts.filter(t=>t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito').length};
+}
+function agNovoDoc(m,v,fr,sup,por,tpl){
+  const id=agDocId(m,v),agora=Date.now();
+  return {id:id,tipo:'agenda',origem:'agenda-mes',mes:m,supervisor:sup||'',franquia:fr||'',data:m+'-01',periodo:'dia',horas:0,
+    vendedores:[v],visitas:0,pedidos:0,aberturas:0,valor:0,meta:0,oportunidades:[],agenda:[],proximos:[],avaliacoes:[],plano:false,motivo:'',nota:'',regiao:'',
+    lancadoPor:por,criadoEm:agora,atualizadoEm:agora,
+    tarefas:tpl.map((s,i)=>({id:id+'-'+(i+1),tipo:'passo',texto:s.texto,detalhe:'',valor:0,prazo:s.prazo,vendedores:[v],status:'pendente',okEm:'',okPor:'',origem:'agenda-mes',slot:i+1}))};
+}
+
+/* ---------- gravações ---------- */
+async function agFazer(fn,okMsg,depois){
+  if(!S.canWrite){toast('Seu acesso é só de leitura.');return false;}
+  try{await fn();if(depois)depois();renderAll();if(okMsg)toast(okMsg);return true;}
+  catch(e){toast(failMsg(e));return false;}
+}
+const agTarefa=(r,tid)=>(r.tarefas||[]).find(y=>y.id===tid);
+function agHist(x,de){x.hist=(x.hist||[]).concat([{em:new Date().toISOString(),por:agPor(),de:de,para:{texto:x.texto,prazo:x.prazo}}]).slice(-10);}
+function agEditar(rid,tid,patch){
+  return agFazer(()=>updateRec(rid,r=>{const x=agTarefa(r,tid);if(!x)return;const de={texto:x.texto,prazo:x.prazo};Object.assign(x,patch);agHist(x,de);}),'Salvo ✓');
+}
+function agAdicionar(rid){
+  return agFazer(()=>updateRec(rid,r=>{
+    const ts=r.tarefas=r.tarefas||[],v=(r.vendedores||[])[0]||'';
+    const ult=ts.map(t=>t.prazo).filter(Boolean).sort().pop()||(r.mes+'-28');
+    ts.push({id:r.id+'-n'+Date.now().toString(36),tipo:'passo',texto:AG_TIPOS[0],detalhe:'',valor:0,prazo:ult,vendedores:[v],status:'pendente',okEm:'',okPor:'',origem:'agenda-mes',slot:ts.length+1});
+  }),'Compromisso adicionado');
+}
+function agRemover(rid,tid){
+  return agFazer(()=>updateRec(rid,r=>{r.tarefas=(r.tarefas||[]).filter(y=>y.id!==tid);}),'Compromisso removido',()=>{S.agConf=null;});
+}
+/* o OK do supervisor: cria a agenda de cada vendedor marcado e ela passa a aparecer para ele */
+async function agLancar(m,lista){
+  if(!lista.length)return;
+  const tpl=agTpl(m).slots;
+  if(tpl.some(s=>!s.prazo||!String(s.texto||'').trim())){toast('Confira o tipo e a data dos 4 compromissos.');return;}
+  const sup=S.me.sup||S.agEm||'';
+  let feitos=0,jaTinham=0;
+  S.agBusy=true;renderAll();
+  const ok=await agFazer(()=>enqueue(async()=>{
+    for(const x of lista){
+      const id=agDocId(m,x.n);
+      let ex=false;
+      try{const s=await db.doc('saidas/'+id).get();ex=!!s.exists;}catch(e){}
+      if(ex){jaTinham++;continue;}
+      const doc=agNovoDoc(m,x.n,x.fr,sup,agPor(),tpl);
+      await db.doc('saidas/'+id).set(doc);
+      const i=S.agDocs.findIndex(d=>d.id===id);if(i>=0)S.agDocs[i]=doc;else S.agDocs.push(doc);
+      feitos++;
+    }
+  }));
+  S.agBusy=false;renderAll();
+  if(ok){
+    if(feitos){toast('Agenda de '+agMesNome(m)+' liberada para '+feitos+(feitos>1?' vendedores':' vendedor')+(jaTinham?' ('+jaTinham+' já tinha'+(jaTinham>1?'m':'')+')':'')+'. 🎉');confetti();}
+    else toast('Esses vendedores já tinham agenda neste mês.');
+  }
+}
+/* pedido de mudança: o vendedor sugere a data, o supervisor decide */
+function agPedirEnviar(t,f){
+  const hoje=iso(new Date()),doMes=t.origem==='agenda-mes';
+  if(!f.data||f.data<hoje){toast('Escolha uma data a partir de hoje.');return;}
+  if(String(f.motivo||'').trim().length<3){toast('Conte o motivo do pedido em poucas palavras.');return;}
+  const tipo=doMes&&f.tipo&&f.tipo!==agBase(t.texto)?f.tipo:'';
+  if(f.data===t.prazo&&!tipo){toast('Escolha outra data'+(doMes?' ou outro tipo de compromisso':'')+'.');return;}
+  return agFazer(()=>updateRec(t.rid,r=>{
+    const x=agTarefa(r,t.id);if(!x)return;
+    x.pedido={status:'pendente',data:f.data,tipo:tipo,motivo:f.motivo.trim(),por:S.vend?S.vend.name:'',em:new Date().toISOString(),de:{texto:x.texto,prazo:x.prazo}};
+  }),'Pedido enviado. O supervisor responde aqui no app.',()=>{S.agPed=null;});
+}
+function agCancelar(t){
+  return agFazer(()=>updateRec(t.rid,r=>{const x=agTarefa(r,t.id);if(x&&x.pedido&&x.pedido.status==='pendente')x.pedido=null;}),'Pedido cancelado');
+}
+function agDecidir(t,aprova,resposta){
+  return agFazer(()=>updateRec(t.rid,r=>{
+    const x=agTarefa(r,t.id),p=x&&x.pedido;
+    if(!p||p.status!=='pendente')return;
+    if(aprova){
+      const de={texto:x.texto,prazo:x.prazo};
+      if(p.data){
+        x.prazo=p.data;
+        if(x.tipo==='prospeccao'){const op=oppForTask(r,x);if(op&&!oppFechada(op))op.retorno=p.data;}
+      }
+      if(p.tipo&&x.origem==='agenda-mes'){const cli=clienteDe(x.texto);x.texto=p.tipo+(cli?' — '+cli:'');}
+      agHist(x,de);
+    }
+    p.status=aprova?'aprovado':'recusado';p.decididoPor=agPor();p.decididoEm=new Date().toISOString();p.resposta=String(resposta||'').trim();
+  }),aprova?'Mudança aprovada. A data nova já vale para o vendedor.':'Pedido recusado.',()=>{S.agRec=null;});
+}
+function agMsg(d){
+  const v=(d.vendedores||[])[0]||'',L=['Olá, '+safe(v)+'! Aqui é o '+safe(d.supervisor||'seu supervisor')+'.','Sua agenda de '+agMesNome(d.mes)+' ficou assim:',''];
+  (d.tarefas||[]).slice().sort(byPrazo).forEach((t,i)=>L.push((i+1)+'. *'+safe(t.texto)+'* — '+(t.prazo?dmw(t.prazo):'sem data')));
+  L.push('','Se precisar mudar alguma data, sugira a nova data pelo app (toque em *Pedir mudança*) e eu aprovo por lá. Ao cumprir, registre com a foto do local. Obrigado!');
+  return L.join('\n');
+}
+
+/* ---------- peças de tela ---------- */
+function agDate(valor,onSet,min){
+  const lab=el('small',{class:'agdw',text:valor?WD[parseISO(valor).getDay()]:''});
+  const inp=el('input',{type:'date',class:'agdate',value:valor||'',min:min||false,'aria-label':'Data do compromisso',onchange:e=>{const v=e.target.value;lab.textContent=v?WD[parseISO(v).getDay()]:'';if(v)onSet(v);}});
+  return el('div',{class:'agdt'},inp,lab);
+}
+function agTipoSel(valor,onSet){
+  const base=agBase(valor),ops=AG_TIPOS.slice();
+  if(base&&!ops.includes(base))ops.push(base);
+  const w=el('div',{class:'agtipo'}),sel=el('select',{class:'agsel','aria-label':'Tipo de compromisso'});
+  ops.forEach(o=>sel.append(el('option',{value:o,text:o})));
+  sel.append(el('option',{value:'__outro',text:'✏️ Outro…'}));
+  sel.value=base&&ops.includes(base)?base:ops[0];
+  const txt=el('input',{type:'text',class:'agoutro',placeholder:'Digite o tipo de compromisso',maxlength:'60','aria-label':'Outro tipo de compromisso',hidden:true});
+  sel.addEventListener('change',()=>{
+    if(sel.value==='__outro'){txt.hidden=false;txt.focus();}
+    else{txt.hidden=true;onSet(sel.value);}
+  });
+  txt.addEventListener('change',()=>{const v=txt.value.trim();if(v)onSet(v);});
+  w.append(sel,txt);
+  return w;
+}
+function agPedidoTxt(t,p){
+  const de=p.de||{texto:t.texto,prazo:t.prazo},partes=[(t.tipo==='prospeccao'?'Visita a ':'')+agBase(de.texto)+': '+(de.prazo?fmtDay(de.prazo):'sem data')+' → '+(p.data?fmtDay(p.data):'—')];
+  if(p.tipo)partes.push('trocar por '+p.tipo);
+  if(p.motivo)partes.push('Motivo: '+p.motivo);
+  return partes.join(' · ');
+}
+function agPedidoBox(t){
+  const p=t.pedido,box=el('div',{class:'agreq'});
+  box.append(el('b',{text:'🔔 '+((t.vendedores&&t.vendedores[0])||'Vendedor')+' pediu mudança'}),el('small',{text:agPedidoTxt(t,p)}));
+  if(S.agRec===t.id){
+    const inp=el('input',{type:'text',class:'agcli',placeholder:'Resposta ao vendedor (opcional)',maxlength:'120','aria-label':'Resposta ao vendedor'});
+    box.append(inp,el('div',{class:'opbtns'},
+      el('button',{type:'button',class:'btn sm dangerbtn',text:'Confirmar recusa',onclick:()=>agDecidir(t,false,inp.value)}),
+      el('button',{type:'button',class:'btn sm',text:'Voltar',onclick:()=>{S.agRec=null;renderAll();}})));
+  }else box.append(el('div',{class:'opbtns'},
+    el('button',{type:'button',class:'btn sm primary',text:'✅ Aprovar',onclick:()=>agDecidir(t,true)}),
+    el('button',{type:'button',class:'btn sm',text:'❌ Recusar',onclick:()=>{S.agRec=t.id;renderAll();}})));
+  return box;
+}
+function agTplBox(m){
+  const box=el('div',{class:'agtpl'});
+  agTpl(m).slots.forEach((s,i)=>box.append(el('div',{class:'agslot'},el('span',{class:'agn',text:String(i+1)}),agTipoSel(s.texto,v=>{s.texto=v;}),agDate(s.prazo,v=>{s.prazo=v;}))));
+  return box;
+}
+function agSlotRow(d,t,i){
+  const pb=pbOf(t),cli=clienteDe(t.texto),base=agBase(t.texto);
+  const row=el('div',{class:'agslot'+(t.status==='feito'?' done':'')},
+    el('span',{class:'agn',text:String(i)}),
+    agTipoSel(t.texto,v=>agEditar(d.id,t.id,{texto:v+(cli?' — '+cli:'')})),
+    agDate(t.prazo,v=>agEditar(d.id,t.id,{prazo:v})));
+  row.append(el('input',{type:'text',class:'agcli',placeholder:'Cliente ou local (opcional)',maxlength:'80',value:cli,'aria-label':'Cliente ou local',
+      onchange:e=>{const c=e.target.value.trim();agEditar(d.id,t.id,{texto:base+(c?' — '+c:'')});}}),
+    el('span',{class:'badge '+pb.c,text:pb.t}),
+    S.agConf===t.id
+      ?el('button',{type:'button',class:'btn sm dangerbtn',text:'Confirmar remoção',onclick:()=>agRemover(d.id,t.id)})
+      :el('button',{type:'button',class:'btn sm',text:'🗑',title:'Remover este compromisso','aria-label':'Remover este compromisso',onclick:()=>{S.agConf=t.id;renderAll();}}));
+  if(t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito')row.append(agPedidoBox(Object.assign({},t,{rid:d.id,rec:d})));
+  return row;
+}
+function agVendedorItem(d){
+  const v=(d.vendedores||[])[0]||'',r=agResumo(d),aberto=S.agEd===d.id;
+  const head=el('button',{type:'button',class:'agvhead','aria-expanded':String(aberto),onclick:()=>{S.agEd=aberto?null:d.id;renderAll();}},
+    vavatar(v),
+    el('span',{class:'agvn'},el('b',{text:v}),el('small',{text:(d.franquia||'')+(d.supervisor?' · combinado com '+d.supervisor:'')})),
+    r.ped?el('span',{class:'badge warn',text:'🔔 '+r.ped}):null,
+    el('span',{class:'badge '+(r.late?'bad':(r.n&&r.ok===r.n)?'good':''),text:r.ok+'/'+r.n}),
+    el('span',{class:'agchev',text:aberto?'▾':'▸'}));
+  const it=el('div',{class:'agitem'},head);
+  if(!aberto)return it;
+  (d.tarefas||[]).slice().sort(byPrazo).forEach((t,i)=>it.append(agSlotRow(d,t,i+1)));
+  const n=(d.tarefas||[]).length;
+  if(n!==4)it.append(el('p',{class:'hint',text:n+(n===1?' compromisso':' compromissos')+' neste mês. O padrão são 4: 2 Dias da beleza e 2 Rodadas de mesa de negócios.'}));
+  const ph=phoneOf(v),txt=agMsg(d),acts=el('div',{class:'actions'});
+  acts.append(el('button',{type:'button',class:'btn sm',text:'➕ Adicionar compromisso',onclick:()=>agAdicionar(d.id)}),
+    el('a',{class:'btn sm wa',href:waUrlTo(ph,txt),target:'_blank',rel:'noopener',text:'📲 Avisar '+v}));
+  it.append(acts);
+  if(!ph)it.append(el('small',{class:'hint',text:'Cadastre o WhatsApp de '+v+' na engrenagem para abrir direto na conversa dele.'}));
+  return it;
+}
+
+/* ---------- cartão dos supervisores (aba Pendências) ---------- */
+function agCard(body){
+  if(!agPode()||S.mode!=='db'||!S.cfgOk||!S.recsOk)return;
+  const m=S.agMes,atual=iso(new Date()).slice(0,7);
+  const todos=agRoster(m),docs=agDocsMes(m),faltam=todos.filter(x=>!agDocDe(m,x.n)),reqs=agPedidos();
+  const tot=docs.reduce((a,d)=>{const r=agResumo(d);a.n+=r.n;a.ok+=r.ok;a.late+=r.late;return a;},{n:0,ok:0,late:0});
+  const aberto=S.agOpen==null?((m===atual&&faltam.length>0)||reqs.length>0):S.agOpen;
+  const sub=!todos.length?'Cadastre os vendedores nas Configurações.'
+    :!docs.length?(m===atual?'Proposta pronta: aguardando o OK dos supervisores':'Ainda não lançada para ninguém')
+    :docs.length+' de '+todos.length+' vendedores · '+tot.ok+' de '+tot.n+' cumpridos'+(tot.late?' · 🔴 '+tot.late+(tot.late>1?' atrasados':' atrasado'):'')+(faltam.length?' · faltam '+faltam.length:'');
+  const c=el('div',{class:'card agcard'+(reqs.length||(faltam.length&&m===atual)?' warnb':'')});
+  c.append(el('button',{type:'button',class:'aghead','aria-expanded':String(aberto),onclick:()=>{S.agOpen=!aberto;renderAll();}},
+    el('span',{class:'ico t',text:'🗓️'}),
+    el('span',{class:'agh'},el('b',{text:'Agenda do mês · '+agMesNome(m)}),el('small',{text:sub+(reqs.length?' · 🔔 '+reqs.length+(reqs.length>1?' pedidos':' pedido'):'')})),
+    el('span',{class:'agchev',text:aberto?'▾':'▸'})));
+  body.append(c);
+  if(!aberto)return;
+  c.append(el('div',{class:'agnav'},
+    el('button',{type:'button',class:'btn sm',text:'‹ '+agMesNome(prevKey(m)),onclick:()=>{S.agMes=prevKey(m);renderAll();}}),
+    el('b',{text:agMesNome(m)+' de '+m.slice(0,4)}),
+    el('button',{type:'button',class:'btn sm',text:agMesNome(nextKey(m))+' ›',onclick:()=>{S.agMes=nextKey(m);renderAll();}})));
+  c.append(el('p',{class:'hint',text:'Todo mês o app prepara a proposta: 4 compromissos por vendedor, sendo 2 Dias da beleza e 2 Rodadas de mesa de negócios. O supervisor confere as datas e dá o OK; só então os compromissos aparecem para o vendedor. Depois você muda datas e tipos quando precisar. O vendedor sugere a data de qualquer mudança pelo app, e você aprova ou recusa.'}));
+  if(reqs.length){
+    const bx=el('div',{class:'agreqs'},el('span',{class:'lbl',text:'🔔 Pedidos de mudança de data ('+reqs.length+')'}));
+    reqs.forEach(t=>bx.append(el('div',{class:'agreqwrap'},el('small',{text:((t.vendedores&&t.vendedores[0])||'')+' · '+(t.rec.franquia||'')+' · '+agOrigem(t.rec)}),agPedidoBox(t))));
+    c.append(bx);
+  }
+  const frs=[...new Set(todos.map(x=>x.fr).filter(Boolean))];
+  if(frs.length>1){
+    const row=el('div',{class:'chips mt8'});
+    [['','Todas']].concat(frs.map(f=>[f,f])).forEach(([v,t])=>row.append(el('button',{type:'button',class:'chip sm','aria-pressed':String((S.agFr||'')===v),text:t,onclick:()=>{S.agFr=v;renderAll();}})));
+    c.append(el('span',{class:'lbl mt10',text:'Franquia'}),row);
+  }
+  const falt=faltam.filter(x=>!S.agFr||x.fr===S.agFr);
+  if(falt.length){
+    const L=el('div',{class:'aglaunch'},el('span',{class:'lbl',text:'✅ Agenda de '+agMesNome(m)+': proposta pronta para o seu OK'}),
+      el('p',{class:'hint',text:'Proposta: 2 Dias da beleza e 2 Rodadas de mesa de negócios para cada vendedor marcado. Confira as datas, ajuste se precisar e toque em OK: os compromissos aparecem na hora para os vendedores.'}),
+      agTplBox(m));
+    if(!S.me.sup){
+      const em=el('div',{class:'chips mt8'});
+      [''].concat(S.cfg.supervisores).forEach(n=>em.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(S.agEm===n),text:n||'Gerente',onclick:()=>{S.agEm=n;renderAll();}})));
+      L.append(el('span',{class:'lbl mt10',text:'Combinado em nome de'}),em);
+    }
+    const sel=falt.filter(x=>!S.agNo.has(x.n)),vc=el('div',{class:'chips mt8'});
+    falt.forEach(x=>vc.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(!S.agNo.has(x.n)),text:x.n+(frs.length>1&&!S.agFr?' · '+x.fr:''),
+      onclick:()=>{if(S.agNo.has(x.n))S.agNo.delete(x.n);else S.agNo.add(x.n);renderAll();}})));
+    L.append(el('span',{class:'lbl mt10',text:'Vendedores ('+sel.length+' de '+falt.length+')'}),vc,
+      el('div',{class:'actions'},el('button',{type:'button',class:'btn primary',disabled:!sel.length||S.agBusy,text:S.agBusy?'Liberando…':'✅ OK: liberar para '+sel.length+(sel.length===1?' vendedor':' vendedores'),onclick:()=>agLancar(m,sel)})));
+    c.append(L);
+  }
+  const lista=docs.filter(d=>!S.agFr||d.franquia===S.agFr).sort((a,b)=>(a.franquia||'').localeCompare(b.franquia||'','pt-BR')||String((a.vendedores||[])[0]).localeCompare(String((b.vendedores||[])[0]),'pt-BR'));
+  if(lista.length){c.append(el('span',{class:'lbl mt10',text:'Agenda de cada vendedor'}));lista.forEach(d=>c.append(agVendedorItem(d)));}
+  else if(!falt.length)c.append(el('p',{class:'hint',text:'Nenhum vendedor com agenda neste mês.'}));
+}
+/* avisos no topo para supervisores e gerente: proposta da agenda esperando o OK e pedidos de mudança */
+function agBanner(b){
+  if(!agPode()||S.mode!=='db'||!S.cfgOk||!S.recsOk||S.tab==='pend')return false;
+  const hoje=iso(new Date()),m=hoje.slice(0,7),reqs=agPedidos();
+  let any=false;
+  if(reqs.length){
+    b.append(el('div',{class:'notice alerta'},el('div',null,
+      el('b',{text:'🔔 '+reqs.length+(reqs.length>1?' pedidos de mudança de data':' pedido de mudança de data')}),
+      el('div',{text:listPt([...new Set(reqs.map(t=>(t.vendedores&&t.vendedores[0])||''))])+(reqs.length>1?' pediram':' pediu')+' para mudar uma data. Toque para aprovar ou recusar.'})),
+      el('button',{type:'button',class:'btn sm',text:'Ver pedidos',onclick:()=>{S.agMes=reqs[0].rec.mes||S.agMes;S.agOpen=true;setTab('pend');}})));
+    any=true;
+  }
+  const falt=agRoster(m).filter(x=>!agDocDe(m,x.n));
+  if(falt.length&&(!agDocsMes(m).length||new Date().getDate()<=7)&&LS.get('rs_agoff','')!==hoje){
+    b.append(el('div',{class:'notice info'},el('div',null,
+      el('b',{text:'🗓️ Agenda de '+agMesNome(m)+': proposta aguardando o OK'}),
+      el('div',{text:'2 Dias da beleza e 2 Rodadas de mesa de negócios para '+falt.length+(falt.length>1?' vendedores':' vendedor')+'. Confira as datas e dê o OK para os compromissos aparecerem para os vendedores.'})),
+      el('div',{class:'opbtns'},
+        el('button',{type:'button',class:'btn sm primary',text:'Ver proposta e dar OK',onclick:()=>{S.agMes=m;S.agOpen=true;setTab('pend');}}),
+        el('button',{type:'button',class:'btn sm',text:'Agora não',onclick:()=>{LS.set('rs_agoff',hoje);renderAll();}}))));
+    any=true;
+  }
+  return any;
+}
+
+/* ---------- vendedor: pedir mudança de data ---------- */
+function agPedirForm(t){
+  const aberto=S.agPed&&S.agPed.tid===t.id,doMes=t.origem==='agenda-mes';
+  if(!aberto)return el('button',{type:'button',class:'btn sm',text:'🔁 Pedir mudança de data',onclick:()=>{S.agPed={tid:t.id,data:t.prazo||'',tipo:agBase(t.texto),motivo:''};renderAll();}});
+  const f=S.agPed,hoje=iso(new Date());
+  return el('div',{class:'agform'},el('span',{class:'lbl',text:'Sugerir outra data ao supervisor'}),
+    el('span',{class:'lbl',text:'Nova data'}),agDate(f.data,v=>{f.data=v;},hoje),
+    doMes?el('span',{class:'lbl',text:'Tipo de compromisso'}):null,doMes?agTipoSel(f.tipo,v=>{f.tipo=v;}):null,
+    el('span',{class:'lbl',text:'Motivo do pedido'}),
+    el('input',{type:'text',class:'agcli',placeholder:'Ex.: loja fechada nesse dia',maxlength:'140','aria-label':'Motivo do pedido',value:f.motivo,oninput:e=>{f.motivo=e.target.value;}}),
+    el('div',{class:'opbtns'},
+      el('button',{type:'button',class:'btn sm primary',text:'📨 Enviar pedido',onclick:()=>agPedirEnviar(t,f)}),
+      el('button',{type:'button',class:'btn sm',text:'Voltar',onclick:()=>{S.agPed=null;renderAll();}})));
+}
+/* nos cartões do vendedor (qualquer compromisso ou visita): situação do pedido e botão de pedir mudança */
+function agVendExtra(t,c){
+  const p=t.pedido;
+  if(t.origem==='agenda-mes')c.insertBefore(el('small',{class:'agtag',text:'🗓️ Agenda de '+agMesNome(t.rec.mes).toLowerCase()}),c.firstChild);
+  if(p&&p.status==='pendente'&&t.status!=='feito'){
+    c.append(el('div',{class:'agreq pend'},el('b',{text:'⏳ Pedido enviado: aguardando o supervisor'}),el('small',{text:agPedidoTxt(t,p)}),
+      el('div',{class:'opbtns'},el('button',{type:'button',class:'btn sm',text:'Cancelar pedido',onclick:()=>agCancelar(t)}))));
+    return;
+  }
+  if(p&&(p.status==='aprovado'||p.status==='recusado'))
+    c.append(el('div',{class:'agreq '+(p.status==='aprovado'?'ok':'no')},
+      el('b',{text:p.status==='aprovado'?'✅ Mudança aprovada por '+(p.decididoPor||'o supervisor'):'❌ Pedido recusado por '+(p.decididoPor||'o supervisor')}),
+      p.resposta?el('small',{text:'“'+p.resposta+'”'}):null));
+  if(t.status!=='feito')c.append(agPedirForm(t));
+}
+/* nos cartões de compromisso dos supervisores */
+function agSupExtra(t,c){
+  if(t.origem==='agenda-mes')c.insertBefore(el('small',{class:'agtag',text:'🗓️ Agenda de '+agMesNome(t.rec.mes).toLowerCase()}),c.firstChild);
+  if(t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito'&&agPode())c.append(agPedidoBox(t));
+}
+
+/* ---------- vendedor: resumo da agenda do mês no topo das Tarefas ---------- */
+function vendAgenda(body){
+  const all=vendTasks().filter(t=>t.origem==='agenda-mes');
+  if(!all.length)return;
+  const mk=iso(new Date()).slice(0,7);
+  [...new Set(all.map(t=>t.rec.mes))].sort().filter(m=>m>=mk||all.some(t=>t.rec.mes===m&&t.status!=='feito')).forEach(m=>{
+    const l=all.filter(t=>t.rec.mes===m).sort(byPrazo),ok=l.filter(cumprida).length,sup=l[0].rec.supervisor;
+    const c=el('div',{class:'card agv'},el('h2',null,el('span',{class:'ico t',text:'🗓️'}),'Sua agenda de '+agMesNome(m)),
+      el('p',{class:'hint',text:ok+' de '+l.length+(l.length===1?' compromisso feito':' compromissos feitos')+'. Combinados com '+(sup||'o supervisor')+'.'}));
+    l.forEach(t=>{
+      const pb=pbOf(t),pend=t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito';
+      c.append(el('div',{class:'agvrow'},el('span',{class:'agemo',text:agEmo(t.texto)}),
+        el('div',{class:'agvt'},el('b',{text:t.texto}),el('small',{text:(t.prazo?fmtDay(t.prazo):'sem data')+(pend?' · ⏳ mudança pedida':'')})),
+        el('span',{class:'badge '+pb.c,text:pb.t})));
+    });
+    c.append(el('div',{class:'opbtns'},el('button',{type:'button',class:'btn sm primary',text:'Abrir minha agenda',onclick:()=>{
+      S.vagV='mes';S.vagM=m;S.vtab='agenda';renderVend();window.scrollTo(0,0);}})));
+    body.append(c);
+  });
+}
+
+/* bônus de aberturas: aceita vírgula (0,5) e some o zero à direita (3) */
+function fmtBonus(n){return String(Math.round((+n||0)*10)/10).replace('.',',');}
+
+/* ---------- vendedor: aba Agenda (semana e mês) ---------- */
+function agItem(t){
+  const pb=pbOf(t),aberto=S.vagOpen.has(t.id),prosp=t.tipo==='prospeccao',pend=t.pedido&&t.pedido.status==='pendente'&&t.status!=='feito';
+  const sub=(prosp?'Prospecção':t.origem==='agenda-mes'?'Agenda do mês':'Compromisso')+(pend?' · ⏳ mudança pedida':'');
+  const w=el('div',{class:'vagitem'},el('button',{type:'button',class:'vagrow'+(t.status==='feito'?' fim':''),'aria-expanded':String(aberto),
+      onclick:()=>{if(S.vagOpen.has(t.id))S.vagOpen.delete(t.id);else S.vagOpen.add(t.id);renderVend();}},
+    el('span',{class:'agemo',text:prosp?'🎯':agEmo(t.texto)}),
+    el('span',{class:'vagt'},el('b',{text:t.texto}),el('small',{text:sub})),
+    el('span',{class:'badge '+pb.c,text:pb.t})));
+  if(aberto)w.append(vTaskCard(t));
+  return w;
+}
+function agDiaBloco(dk,l,hoje){
+  const d=parseISO(dk);
+  const b=el('div',{class:'vagday'+(dk===hoje?' hoje':'')+(l.length?'':' vazio')},
+    el('div',{class:'vagdh',id:'vagd-'+dk},el('b',{text:DIAS_LONGO[d.getDay()]}),el('small',{text:dm(dk)}),dk===hoje?el('span',{class:'badge good',text:'hoje'}):null,
+      l.length?null:el('small',{class:'vagnada',text:'Nada marcado'})));
+  l.forEach(t=>b.append(agItem(t)));
+  return b;
+}
+function vendAgendaTab(body){
+  vendHello(body);
+  const hoje=iso(new Date()),mes=S.vagV==='mes',ws=S.vagW,m=S.vagM;
+  const todas=vendTasks().filter(t=>t.prazo),porDia=new Map();
+  todas.forEach(t=>{if(!porDia.has(t.prazo))porDia.set(t.prazo,[]);porDia.get(t.prazo).push(t);});
+  porDia.forEach(l=>l.sort((a,b)=>(a.status==='feito'?1:0)-(b.status==='feito'?1:0)||String(a.texto).localeCompare(String(b.texto),'pt-BR')));
+  const atual=mes?m===hoje.slice(0,7):iso(ws)===iso(mondayOf(new Date()));
+  const topo=el('div',{class:'card'},el('h2',null,el('span',{class:'ico t',text:'🗓️'}),'Minha agenda'),
+    el('p',{class:'hint',text:'Seus compromissos e visitas por data. Toque em um item para responder, anexar foto ou sugerir outra data.'}));
+  const seg=el('div',{class:'seg seg2 vagseg',role:'group','aria-label':'Período da agenda'});
+  [['sem','📅 Semana'],['mes','🗓️ Mês']].forEach(([k,lab])=>seg.append(el('button',{type:'button',class:'segb','aria-pressed':String((mes?'mes':'sem')===k),onclick:()=>{S.vagV=k;renderVend();}},el('span',{text:lab}))));
+  topo.append(seg);
+  const passo=dir=>{if(mes)S.vagM=dir<0?prevKey(m):nextKey(m);else S.vagW=addDays(ws,7*dir);renderVend();};
+  topo.append(el('div',{class:'agnav'},
+    el('button',{type:'button',class:'btn sm','aria-label':mes?'Mês anterior':'Semana anterior',text:'‹',onclick:()=>passo(-1)}),
+    el('b',{text:(mes?agMesNome(m)+' de '+m.slice(0,4):dm(iso(ws))+' a '+dm(iso(addDays(ws,6))))+(atual?(mes?' · este mês':' · esta semana'):'')}),
+    el('button',{type:'button',class:'btn sm','aria-label':mes?'Próximo mês':'Próxima semana',text:'›',onclick:()=>passo(1)})));
+  if(!atual)topo.append(el('div',{class:'opbtns'},el('button',{type:'button',class:'btn sm',text:mes?'Voltar para este mês':'Voltar para esta semana',onclick:()=>{S.vagM=hoje.slice(0,7);S.vagW=mondayOf(new Date());renderVend();}})));
+  body.append(topo);
+  if(!mes){
+    if(atual){
+      const atr=todas.filter(t=>t.status!=='feito'&&t.prazo<iso(ws)).sort(byPrazo);
+      if(atr.length){const c=el('div',{class:'card vag'},el('h2',null,el('span',{class:'ico r',text:'🔴'}),'Atrasados ('+atr.length+')'));atr.forEach(t=>c.append(agItem(t)));body.append(c);}
+    }
+    const sem=el('div',{class:'card vag'});
+    for(let i=0;i<7;i++){const dk=iso(addDays(ws,i));sem.append(agDiaBloco(dk,porDia.get(dk)||[],hoje));}
+    body.append(sem);
+    return;
+  }
+  const y=+m.slice(0,4),mo=+m.slice(5,7)-1,ult=new Date(y,mo+1,0).getDate(),off=(new Date(y,mo,1).getDay()+6)%7;
+  const dias=[];
+  for(let d=1;d<=ult;d++){const dk=m+'-'+pad(d);dias.push([dk,porDia.get(dk)||[]]);}
+  const doMes=dias.flatMap(x=>x[1]),feitos=doMes.filter(cumprida).length,atrasados=doMes.filter(t=>t.status!=='feito'&&t.prazo<hoje).length;
+  const grade=el('div',{class:'card vag'}),grid=el('div',{class:'vcal',role:'grid','aria-label':'Calendário de '+agMesNome(m)});
+  ['seg','ter','qua','qui','sex','sáb','dom'].forEach(n=>grid.append(el('span',{class:'vch',text:n})));
+  for(let i=0;i<off;i++)grid.append(el('span',{class:'vcvazio'}));
+  dias.forEach(([dk,l])=>{
+    const dots=el('span',{class:'vdots'});
+    l.slice(0,3).forEach(t=>dots.append(el('i',{class:'vd '+(t.status==='feito'?(naoFeita(t)?'late':'ok'):(t.prazo<hoje?'late':''))})));
+    const props={class:'vcell'+(dk===hoje?' hoje':'')+(l.length?' tem':'')};
+    if(l.length){props.type='button';props['aria-label']=dm(dk)+': '+l.length+(l.length>1?' compromissos':' compromisso');props.onclick=()=>{const x=document.getElementById('vagd-'+dk);if(x)x.scrollIntoView({behavior:'smooth',block:'start'});};}
+    grid.append(el(l.length?'button':'span',props,el('b',{text:String(+dk.slice(8))}),dots));
+  });
+  grade.append(grid,el('p',{class:'hint',text:doMes.length?doMes.length+(doMes.length>1?' compromissos':' compromisso')+' no mês · '+feitos+(feitos===1?' feito':' feitos')+(atrasados?' · 🔴 '+atrasados+(atrasados>1?' atrasados':' atrasado'):''):'Nada marcado neste mês.'}));
+  body.append(grade);
+  const lista=el('div',{class:'card vag'});
+  dias.filter(x=>x[1].length).forEach(([dk,l])=>lista.append(agDiaBloco(dk,l,hoje)));
+  if(lista.children.length)body.append(lista);
+}
+/* ---------- tela motivacional: aparece toda vez que o vendedor termina de avaliar o supervisor ----------
+   As 5 perguntas valem de 0 a 10 (soma máxima 50). Se a soma for menor que 25, a mensagem é mais forte e acolhedora,
+   para o vendedor não desanimar. Sempre mostra o lado positivo e nunca fala em nota baixa. */
+const MOT_BOA=[
+  ['🌟','Missão cumprida!','Você deu o seu melhor e isso faz diferença. Cada visita, cada conversa e cada foto te aproximam da meta. Descanse com a cabeça erguida!'],
+  ['🚀','Obrigado por avaliar!','O seu olhar ajuda o time inteiro a crescer. Você é peça importante nesse resultado. Amanhã tem mais, e a gente vai junto!'],
+  ['🏆','Orgulho de você!','Quem cuida do cliente e do time chega longe. Continue assim: a constância separa bons resultados de grandes resultados.'],
+  ['💪','Dia vencido!','Você fez a sua parte e ainda ajudou a melhorar a equipe. Isso é atitude de quem quer crescer. Bom descanso!'],
+  ['🔥','Siga firme!','Resultado vem de pequenos passos todos os dias, e hoje você deu mais um. Respire, comemore e volte amanhã com a mesma energia!'],
+  ['🎯','Foco no alvo!','Cada tarefa feita é um passo rumo à meta. Hoje você andou mais um pedaço do caminho. Bora pra cima!'],
+  ['🌈','Que dia bom de trabalhar!','Vender é conquistar pessoas, e você faz isso com dedicação. Aproveite o descanso: você merece!'],
+  ['✨','Você faz a diferença!','O time fica mais forte com você. Obrigado por contribuir com a sua opinião e com o seu esforço de todos os dias!']
+];
+const MOT_FORTE=[
+  ['💛','Você é importante para este time!','Obrigado por falar com sinceridade. Dias difíceis acontecem com todo mundo e não definem o seu valor. O seu esforço conta, o seu jeito de ver as coisas ajuda a gente a melhorar, e amanhã é uma nova chance de brilhar!'],
+  ['💪','Você é mais forte do que o dia de hoje!','Os melhores vendedores também passam por dias assim, e o que os fez chegar longe foi levantar e tentar de novo. Respire fundo: você está no caminho certo e a gente está com você!'],
+  ['🌅','Amanhã o sol nasce de novo!','Cada novo dia traz clientes novos, conversas novas e chances novas. Leve daqui o que aprendeu, deixe o resto para trás e volte com energia total. Você consegue!'],
+  ['🌟','Sua opinião vale ouro!','Dar um retorno honesto exige coragem, e coragem é qualidade de quem cresce rápido. Obrigado por confiar na gente. Juntos, vamos transformar isso em resultado!'],
+  ['🚀','O melhor ainda está por vir!','Tudo o que você viveu hoje vira experiência para o próximo passo. Você já mostrou que tem garra, e a sua dedicação não passa despercebida. Vamos juntos, uma visita de cada vez!'],
+  ['🤝','Estamos juntos nessa!','O que não foi bom hoje vira ajuste amanhã, e o seu esforço é reconhecido. Conte com a gente e continue acreditando em você!']
+];
+function motEscolhe(lista,chave){
+  const ult=LS.get(chave,-1);
+  let i=Math.floor(Math.random()*lista.length);
+  if(lista.length>1&&i===ult)i=(i+1)%lista.length;
+  LS.set(chave,i);
+  return lista[i];
+}
+/* só coisas boas do dia do vendedor */
+function motDestaques(){
+  const v=S.vend&&S.vend.name,out=[];
+  if(!v)return out;
+  const hoje=iso(new Date());
+  const feitas=allTarefas(S.recs).filter(t=>tarefaVend(t).includes(v)&&cumprida(t)&&t.okEm===hoje).length;
+  if(feitas)out.push('✅ '+feitas+(feitas>1?' tarefas concluídas hoje':' tarefa concluída hoje'));
+  const fotos=S.fotos.filter(f=>f.vendedor===v&&String(f.em||'').slice(0,10)===hoje).length;
+  if(fotos)out.push('📸 '+fotos+(fotos>1?' fotos de eventos enviadas hoje':' foto de evento enviada hoje'));
+  const sq=vendSequencia();
+  if(sq>=2)out.push('🔥 '+sq+' dias seguidos entregando no prazo');
+  return out;
+}
+function motivar(notas){
+  if(!S.vend||document.getElementById('motView'))return;
+  const soma=notas.reduce((s,x)=>s+(+x||0),0),forte=soma<25;
+  const m=motEscolhe(forte?MOT_FORTE:MOT_BOA,forte?'rs_mot_f':'rs_mot_b');
+  const nome=String(S.vend.name||'').split(' ')[0];
+  const box=el('div',{id:'motView',class:'motview',role:'dialog','aria-modal':'true','aria-label':'Mensagem para você'});
+  const card=el('div',{class:'obcard motcard'+(forte?' forte':'')});
+  card.append(el('div',{class:'obemo',text:m[0]}),
+    el('h2',{class:'obt',text:(nome?nome+', ':'')+(nome?m[1].charAt(0).toLowerCase()+m[1].slice(1):m[1])}),
+    el('p',{class:'obp',text:m[2]}));
+  const d=motDestaques();
+  if(d.length)card.append(el('div',{class:'motdest'},el('small',{text:'O lado bom do seu dia'}),...d.map(x=>el('span',{text:x}))));
+  const fecha=()=>{
+    document.removeEventListener('keydown',tecla);
+    box.remove();
+    if(S.vtab==='aval')S.vtab='tarefas';
+    renderAll();window.scrollTo(0,0);
+  };
+  const tecla=e=>{if(e.key==='Escape')fecha();};
+  const ok=el('button',{type:'button',class:'btn primary',text:forte?'Bora pra cima! 🚀':'Valeu! 💪',onclick:fecha});
+  card.append(el('div',{class:'obacts'},ok));
+  box.append(card);
+  document.body.append(box);
+  document.addEventListener('keydown',tecla);
+  setTimeout(()=>{try{ok.focus();}catch(e){}},50);
+  confetti();
+}
+/* ---------- metas, resultados e pontos do mês ----------
+   Cada vendedor tem, por mês, um documento "resultado" (saidas/res-AAAA-MM-nome) com as metas e o acumulado do mês, digitados na
+   aba Metas pela gerência e pela supervisão (1 vez por semana). Como o banco só protege alguns campos contra edição do vendedor,
+   as metas e os resultados ficam nesses campos protegidos do documento:
+     meta = meta de vendas, visitas = meta de aberturas (normal), pedidos = meta de aberturas (acima do normal),
+     valor = vendas do mês, aberturas = aberturas do mês, avaliacoes = histórico semanal [{sem,vendas,aberturas,em}].
+   Pontos (base 100): vendas 30 + aberturas 30 + tarefas 25 + avaliação dos supervisores 15 (o que faltar no mês sai da conta e os
+   pesos se reajustam). Extras: superar a meta de vendas (+1 a cada 5%, até +10), aberturas acima do normal (até +10), campeão de
+   aberturas da franquia (+5 por padrão) e melhor avaliação dos supervisores (+5, nota mínima 8).
+   Selos: meta de vendas batida e aberturas na meta "acima do normal". O ranking ordena por selos e depois por pontos. */
+const PESOS_PONTOS={vendas:30,aberturas:30,tarefas:25,avaliacao:15};
+const CLASSES_PONTOS=[[90,'🏆 Craque'],[80,'⭐ Destaque'],[70,'👍 No ritmo'],[60,'📈 Em evolução'],[0,'🔔 Precisa de atenção']];
+const classePontos=n=>(CLASSES_PONTOS.find(c=>n>=c[0])||CLASSES_PONTOS[CLASSES_PONTOS.length-1])[1];
+Object.assign(S,{resDocs:[],mtMes:iso(new Date()).slice(0,7),mtDraft:{}});
+function resIsDoc(r){return !!r&&r.tipo==='resultado';}
+const resDocId=(m,v)=>'res-'+m+'-'+agSlug(v);
+const resDocsMes=m=>(S.resDocs||[]).filter(d=>d.mes===m);
+const resDocDe=(m,v)=>(S.resDocs||[]).find(d=>d.id===resDocId(m,v));
+const resMetas=d=>({vendas:+d.meta||0,abN:+d.visitas||0,abA:+d.pedidos||0});
+const resFeito=d=>({vendas:+d.valor||0,ab:+d.aberturas||0});
+function resNovoDoc(m,v,fr){
+  const id=resDocId(m,v),agora=Date.now();
+  return {id:id,tipo:'resultado',origem:'metas',mes:m,supervisor:'',franquia:fr||'',data:m+'-01',periodo:'dia',horas:0,
+    vendedores:[v],visitas:0,pedidos:0,aberturas:0,valor:0,meta:0,oportunidades:[],agenda:[],proximos:[],tarefas:[],avaliacoes:[],plano:false,motivo:'',nota:'',regiao:'',
+    criadoEm:agora,atualizadoEm:agora};
+}
+/* meta da franquia = soma das metas dos vendedores (quando existirem) */
+function metasFranquia(rs,cfgMetas){
+  const soma={};
+  (rs.resDocs||[]).forEach(d=>{const v=resMetas(d).vendas;if(v>0)soma[d.franquia]=(soma[d.franquia]||0)+v;});
+  return Object.assign({},cfgMetas||{},soma);
+}
+function vendasFranquia(rs,fr){
+  const docs=(rs.resDocs||[]).filter(d=>d.franquia===fr&&resMetas(d).vendas>0);
+  return docs.length?docs.reduce((s,d)=>s+resFeito(d).vendas,0):rs.filter(r=>r.franquia===fr).reduce((s,r)=>s+(r.valor||0),0);
+}
+/* campeão de aberturas: quem mais abriu em cada franquia (empate: todos os empatados) */
+function resCampeoes(lista){
+  const topo=new Map();
+  lista.forEach(o=>{const k=o.franquia||'';if(o.aberturas>(topo.get(k)||0))topo.set(k,o.aberturas);});
+  return new Set(lista.filter(o=>o.aberturas>0&&o.aberturas===topo.get(o.franquia||'')).map(o=>o.key));
+}
+const seloVendas=o=>o.S!=null&&o.S>=1;
+const seloAbertura=o=>o.abA>0?o.aberturas>=o.abA:(o.O!=null&&o.O>=1.2);
+const selosTxt=o=>(seloVendas(o)?'🎯':'')+(seloAbertura(o)?'🆕':'');
+/* a lista sai ordenada por selos e pontos; list.semMeta traz quem aparece nas saídas mas ainda não tem meta */
+function vendRank(rs){
+  const docs=rs.resDocs||[];
+  const nv=new Map(notasVend(rs).map(x=>[x.key,x.media])),tv=new Map(tarefasStats(rs).vend.map(x=>[x.key,x])),ex=new Map(extraPontos(rs).map(x=>[x.key,x.score]));
+  const list=[],semMeta=[];
+  docs.forEach(d=>{
+    const v=(d.vendedores||[])[0];if(!v)return;
+    const mt=resMetas(d),fz=resFeito(d);
+    if(!(mt.vendas>0||mt.abN>0)){semMeta.push(v);return;}
+    const t=tv.get(v);
+    list.push({key:v,franquia:d.franquia||'',valor:fz.vendas,aberturas:fz.ab,meta:mt.vendas,abN:mt.abN,abA:mt.abA,
+      S:mt.vendas>0?fz.vendas/mt.vendas:null,O:mt.abN>0?fz.ab/mt.abN:null,
+      extra:ex.has(v)?ex.get(v):null,taxa:t&&t.n?t.ok/t.n:null,tn:t?t.n:0,nota:nv.has(v)?nv.get(v):null});
+  });
+  rs.forEach(r=>r.vendedores.forEach(v=>{if(!semMeta.includes(v)&&!list.some(o=>o.key===v))semMeta.push(v);}));
+  const camp=resCampeoes(list),B=bonusValor();
+  const maxNota=Math.max(0,...list.map(o=>o.nota==null?0:Math.round(o.nota*10)/10));
+  list.forEach(o=>{
+    const blocos=[];
+    if(o.S!=null)blocos.push(['vendas',PESOS_PONTOS.vendas,Math.min(o.S,1)]);
+    if(o.O!=null)blocos.push(['aberturas',PESOS_PONTOS.aberturas,Math.min(o.O,1)]);
+    if(o.extra!=null)blocos.push(['tarefas',PESOS_PONTOS.tarefas,o.extra/5]);
+    if(o.nota!=null)blocos.push(['avaliacao',PESOS_PONTOS.avaliacao,o.nota/10]);
+    const w=blocos.reduce((s,b)=>s+b[1],0);
+    o.blocos={};blocos.forEach(b=>{o.blocos[b[0]]={peso:b[1]*100/w,frac:b[2],pts:b[2]*b[1]*100/w};});
+    o.base=w>0?Math.round(blocos.reduce((s,b)=>s+b[1]*b[2],0)/w*1000)/10:0;
+    o.extVendas=o.S>1?Math.min(10,Math.floor((o.S-1)/0.05+1e-9)):0;
+    o.extAb=0;
+    if(o.O!=null&&o.O>1)o.extAb=o.abA>o.abN?Math.round(100*Math.min(1,(o.aberturas-o.abN)/(o.abA-o.abN)))/10:Math.min(10,Math.floor((o.O-1)/0.10+1e-9));
+    o.bonus=(B>0&&camp.has(o.key))?B:0;
+    o.melhorNota=(o.nota!=null&&Math.round(o.nota*10)/10===maxNota&&maxNota>=8)?5:0;
+    o.extras=o.extVendas+o.extAb+o.bonus+o.melhorNota;
+    o.final=Math.round((o.base+o.extras)*10)/10;
+    o.selos=(seloVendas(o)?1:0)+(seloAbertura(o)?1:0);
+    o.classe=classePontos(o.final);
+  });
+  list.sort((a,b)=>b.selos-a.selos||b.final-a.final||b.valor-a.valor);
+  list.forEach((o,i)=>{o.pos=i+1;});
+  list.semMeta=semMeta;
+  return list;
+}
+const PODIOS=[
+  ['💰','Maior venda',o=>o.valor,v=>fmtBRL(v)],
+  ['🆕','Mais aberturas',o=>o.aberturas,v=>fmtInt(Math.round(v))+(Math.round(v)===1?' abertura':' aberturas')],
+  ['✅','Tarefas cumpridas',o=>o.taxa,v=>fmtPct(v)],
+  ['⭐','Melhor nota dos supervisores',o=>o.nota,v=>fmt1(v)+' / 10'],
+  ['🏅','Pontuação do mês',o=>o.final,v=>fmt1(v)+' pontos']
+];
+/* parcial: mês ainda aberto, então a coluna da direita mostra só os pontos e a classe fica para o fechamento */
+function rankRows(list,parcial){
+  const box=el('div',{class:'rankl'});
+  list.forEach(o=>box.append(el('div',{class:'rankr'},
+    el('b',{class:'rpos',text:(o.pos<=3?MEDALHAS[o.pos-1]:o.pos+'º')}),
+    el('div',{class:'rwho'},el('b',{text:o.key+(selosTxt(o)?' '+selosTxt(o):'')}),
+      el('small',{text:(o.franquia||'')+(o.S!=null?' · vendas '+fmtPct(o.S):'')+(o.O!=null?' · aberturas '+fmtInt(Math.round(o.aberturas))+' de '+o.abN:'')+(o.bonus>0?' · 🏁 campeão de aberturas':'')})),
+    el('div',{class:'rnote'},el('b',{text:fmt1(o.final)}),el('small',{text:parcial?'pontos':o.classe})))));
+  return box;
+}
+function destaquesCard(body,key,rsAll,f){
+  if(!isGer())return;
+  const c=card('🏆 Destaques do mês','Pódio, pontos e classificação dos vendedores. Visível só para o gerente.');
+  body.append(c);
+  if(!extraRevealed(key)){
+    c.append(el('p',{class:'hint',text:'🔒 Revelado no fechamento do mês (em '+dm(nextKey(key)+'-01')+'). O app já está somando metas, tarefas e avaliações. Para ver o placar parcial agora, use a aba Metas.'}),
+      el('button',{type:'button',class:'btn sm',text:'Ver prévia agora',onclick:()=>{S.revealExtra=true;renderMes();}}));
+    return;
+  }
+  const rank=vendRank(rsAll);
+  if(!rank.length){c.append(el('p',{class:'hint',text:'Ainda não há metas cadastradas neste mês. Cadastre na aba Metas.'}));return;}
+  if(f.v){
+    const o=rank.find(x=>x.key===f.v);
+    if(!o){c.append(el('p',{class:'hint',text:'Sem metas de '+f.v+' neste mês. Cadastre na aba Metas.'}));return;}
+    c.append(el('div',{class:'bignote'},el('b',{text:fmt1(o.final)}),el('span',{text:o.classe})),
+      el('p',{class:'hint',text:o.key+' está em '+o.pos+'º de '+rank.length+' vendedores.'+(selosTxt(o)?' Selos: '+selosTxt(o)+'.':' Ainda sem selos.')+(o.extras>0?' Extras do mês: +'+fmtBonus(o.extras)+' pontos (base '+fmt1(o.base)+').':'')}));
+    const b=el('div');c.append(b);
+    const linhas=[];
+    const L=(k,rot,sub)=>{const x=o.blocos[k];if(x)linhas.push({label:rot,value:x.frac*100,max:100,sub:fmt1(x.pts)+' de '+fmt1(x.peso)+' pontos · '+sub});};
+    L('vendas','💰 Vendas',fmtBRL(o.valor)+' de '+fmtBRL(o.meta));
+    L('aberturas','🆕 Aberturas',fmtInt(Math.round(o.aberturas))+' de '+o.abN+(o.abA>o.abN?' (acima do normal: '+o.abA+')':''));
+    L('tarefas','✅ Tarefas',o.taxa!=null?fmtPct(o.taxa)+' cumpridas · pontuação extra '+fmt1(o.extra)+' de 5':'sem tarefas');
+    L('avaliacao','⭐ Avaliação dos supervisores',fmt1(o.nota)+' / 10');
+    barRows(b,linhas,v=>Math.round(v)+'%');
+    return;
+  }
+  const scope=f.fr?rank.filter(o=>o.franquia===f.fr):rank;
+  c.append(el('p',{class:'hint',text:(f.fr?'Pódio de '+f.fr:'Pódio geral, com todos os vendedores')+'.'}));
+  podiumSet(scope).forEach(p=>c.append(p));
+  if(!f.fr){
+    const frs=[...new Set(rank.map(o=>o.franquia).filter(Boolean))];
+    frs.forEach(fr=>c.append(foldBox('dest-'+fr,'🏪 Pódio de '+fr,podiumSet(rank.filter(o=>o.franquia===fr)))));
+  }
+  c.append(foldBox('dest-rank'+(f.fr||''),'📋 Classificação com pontos'+(f.fr?' · '+f.fr:''),[rankRows(scope.map((o,i)=>Object.assign({},o,{pos:i+1})))]));
+  if(rank.semMeta&&rank.semMeta.length)c.append(el('p',{class:'hint',text:'Sem metas cadastradas: '+listPt(rank.semMeta)+'. Cadastre na aba Metas para entrarem na classificação.'}));
+  c.append(el('p',{class:'hint',text:'Como os pontos são calculados (base 100): vendas 30, aberturas 30, tarefas 25 e avaliação dos supervisores 15. Extras: superar a meta de vendas (+1 a cada 5%, até +10), aberturas acima do normal (até +10), campeão de aberturas da franquia (+'+fmtBonus(bonusValor())+') e melhor avaliação dos supervisores (+5, nota mínima 8). Quem tem mais selos (🎯 meta de vendas batida, 🆕 aberturas acima do normal) fica na frente; depois vale a pontuação. Classes: 90 ou mais Craque, 80 a 89 Destaque, 70 a 79 No ritmo, 60 a 69 Em evolução, abaixo de 60 Precisa de atenção.'}));
+}
+
+/* ---------- aba Metas (gerência e supervisão) ---------- */
+function mtRitmo(m,meta,feito){
+  const hj=new Date(),atual=iso(hj).slice(0,7),dias=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();
+  const esp=m<atual?1:m>atual?0:hj.getDate()/dias,rest=m<atual?0:m>atual?dias:dias-hj.getDate()+1;
+  const faltam=Math.max(0,meta-feito),sem=Math.max(1,Math.ceil(rest/7));
+  return {esp:esp,faltam:faltam,sem:sem,porSemana:faltam/sem};
+}
+function mtDraftDe(m,n,d){
+  const k=m+'|'+n,rd=S.mtDraft[k];
+  if(!rd||(!rd.sujo&&rd.sig!==(d?d.atualizadoEm:0))){
+    const mt=d?resMetas(d):{vendas:0,abN:0,abA:0},fz=d?resFeito(d):{vendas:0,ab:0};
+    S.mtDraft[k]={sig:d?d.atualizadoEm:0,sujo:false,meta:mt.vendas?fmtMoneyInput(mt.vendas):'',abN:mt.abN?String(mt.abN):'',abA:mt.abA?String(mt.abA):'',vendas:fz.vendas?fmtMoneyInput(fz.vendas):'',ab:fz.ab?String(fz.ab):''};
+  }
+  return S.mtDraft[k];
+}
+function mtInput(rotulo,valor,onSet,money){
+  const id='mt'+Math.random().toString(36).slice(2,8);
+  return el('div',{class:'mtf'},el('label',{class:'lbl',for:id,text:rotulo}),
+    el('input',{id:id,type:'text',inputmode:money?'decimal':'numeric',autocomplete:'off',placeholder:money?'0,00':'0',maxlength:money?'14':'5',value:valor,
+      oninput:e=>onSet(e.target.value),onchange:e=>{if(money){const n=parseMoney(e.target.value);e.target.value=n?fmtMoneyInput(n):'';}else{const n=parseInt(e.target.value,10);e.target.value=isNaN(n)?'':String(n);}onSet(e.target.value);}}));
+}
+function mtLinha(m,x,d,modo){
+  const dr=mtDraftDe(m,x.n,d),mt=d?resMetas(d):{vendas:0,abN:0,abA:0};
+  const w=el('div',{class:'mtv'},el('div',{class:'mtvh'},vavatar(x.n),el('b',{text:x.n})));
+  const marca=()=>{dr.sujo=true;};
+  if(modo==='res'){
+    w.append(el('div',{class:'mtg2'},mtInput('Vendas no mês (R$)',dr.vendas,v=>{dr.vendas=v;marca();},true),mtInput('Aberturas no mês',dr.ab,v=>{dr.ab=v;marca();},false)));
+    if(!(mt.vendas>0||mt.abN>0))w.append(el('small',{class:'hint',text:'Defina as metas deste vendedor mais abaixo.'}));
+    else{
+      const fz=d?resFeito(d):{vendas:0,ab:0},partes=[];
+      if(mt.vendas>0){const rt=mtRitmo(m,mt.vendas,fz.vendas);partes.push('Vendas '+fmtPct(fz.vendas/mt.vendas)+' da meta (esperado até hoje '+Math.round(rt.esp*100)+'%)'+(rt.faltam>0&&m>=iso(new Date()).slice(0,7)?' · faltam '+fmtBRL(rt.faltam)+', cerca de '+fmtBRL(rt.porSemana)+' por semana':''));}
+      if(mt.abN>0)partes.push('Aberturas '+fz.ab+' de '+mt.abN+(mt.abA>mt.abN?' (acima do normal: '+mt.abA+')':''));
+      const ult=d&&(d.avaliacoes||[]).slice(-1)[0];
+      w.append(el('small',{class:'hint',text:partes.join(' · ')+(ult&&ult.em?' · atualizado em '+dm(ult.em):'')}));
+    }
+  }else{
+    w.append(el('div',{class:'mtg3'},mtInput('Meta de vendas (R$)',dr.meta,v=>{dr.meta=v;marca();},true),mtInput('Aberturas: normal',dr.abN,v=>{dr.abN=v;marca();},false),mtInput('Acima do normal',dr.abA,v=>{dr.abA=v;marca();},false)));
+  }
+  return w;
+}
+function mtVendedores(fr){return (S.cfg.vendedores[fr]||[]).map(n=>({n:n,fr:fr}));}
+async function mtSalvar(m,fr,modo){
+  const itens=[];
+  for(const x of mtVendedores(fr)){
+    const dr=S.mtDraft[m+'|'+x.n];if(!dr||!dr.sujo)continue;
+    if(modo==='metas'){
+      const meta=parseMoney(dr.meta),abN=parseInt(dr.abN,10)||0,abA=parseInt(dr.abA,10)||0;
+      if(abA>0&&abN>0&&abA<=abN){toast(x.n+': a meta "acima do normal" precisa ser maior que a normal.');return;}
+      itens.push({n:x.n,fr:fr,meta:meta,abN:abN,abA:abA});
+    }else{
+      if(dr.vendas===''&&dr.ab==='')continue;
+      itens.push({n:x.n,fr:fr,vendas:parseMoney(dr.vendas),ab:parseInt(dr.ab,10)||0});
+    }
+  }
+  if(!itens.length){toast('Nada novo para salvar em '+fr+'.');return;}
+  const ok=await agFazer(()=>enqueue(async()=>{
+    for(const it of itens){
+      const id=resDocId(m,it.n);
+      let d=null;
+      try{const s=await db.doc('saidas/'+id).get();if(s.exists)d=normRec(Object.assign(JSON.parse(JSON.stringify(s.data())),{id:id}));}catch(e){}
+      if(!d)d=resNovoDoc(m,it.n,it.fr);
+      d.franquia=it.fr;
+      if(modo==='metas'){d.meta=it.meta;d.visitas=it.abN;d.pedidos=it.abA;}
+      else{
+        d.valor=it.vendas;d.aberturas=it.ab;
+        const sem=iso(mondayOf(new Date()));
+        d.avaliacoes=(d.avaliacoes||[]).filter(h=>h.sem!==sem).concat([{sem:sem,vendas:it.vendas,aberturas:it.ab,em:iso(new Date())}]).slice(-12);
+      }
+      d.atualizadoEm=Date.now();
+      await db.doc('saidas/'+id).set(d);
+      const i=S.resDocs.findIndex(x=>x.id===id);if(i>=0)S.resDocs[i]=d;else S.resDocs.push(d);
+      delete S.mtDraft[m+'|'+it.n];
+    }
+    await mtCampeoes(m);
+  }),modo==='metas'?'Metas de '+fr+' salvas ✓':'Atualização de '+fr+' salva ✓');
+  return ok;
+}
+/* grava no documento de cada vendedor se ele é o campeão de aberturas (só para ele ver o emblema; os pontos saem dos números) */
+async function mtCampeoes(m){
+  const docs=resDocsMes(m).filter(d=>{const mt=resMetas(d);return mt.vendas>0||mt.abN>0;});
+  const camp=resCampeoes(docs.map(d=>({key:d.vendedores[0],franquia:d.franquia||'',aberturas:resFeito(d).ab})));
+  for(const d of docs){
+    const sim=camp.has(d.vendedores[0])&&bonusValor()>0;
+    if(!!d.campeao!==sim){d.campeao=sim;d.atualizadoEm=Date.now();await db.doc('saidas/'+d.id).set(d);}
+  }
+}
+function mtCopiar(m,fr){
+  const pk=prevKey(m);let n=0;
+  mtVendedores(fr).forEach(x=>{
+    const p=resDocDe(pk,x.n);if(!p)return;
+    const mt=resMetas(p);if(!(mt.vendas>0||mt.abN>0))return;
+    const dr=mtDraftDe(m,x.n,resDocDe(m,x.n));
+    dr.meta=mt.vendas?fmtMoneyInput(mt.vendas):'';dr.abN=mt.abN?String(mt.abN):'';dr.abA=mt.abA?String(mt.abA):'';dr.sujo=true;n++;
+  });
+  toast(n?'Metas de '+agMesNome(pk)+' copiadas para '+n+(n>1?' vendedores':' vendedor')+'. Confira e toque em Salvar.':'Não achei metas de '+agMesNome(pk)+' nesta franquia.');
+  renderAll();
+}
+function mtBloco(body,m,modo){
+  const res=modo==='res';
+  const c=el('div',{class:'card'},el('h2',null,el('span',{class:'ico '+(res?'t':'o'),text:res?'🗓️':'🎯'}),res?'Atualização da semana':'Metas do mês'),
+    el('p',{class:'hint',text:res?'Uma vez por semana, digite o acumulado do mês de cada vendedor (vendas em R$ e aberturas de clientes). O app soma, mostra o ritmo e atualiza o placar.':'Meta de vendas do mês e meta de aberturas: a normal e a acima do normal. Vale para o mês escolhido.'}));
+  S.cfg.franquias.forEach(fr=>{
+    const lista=mtVendedores(fr);if(!lista.length)return;
+    const nodes=lista.map(x=>mtLinha(m,x,resDocDe(m,x.n),modo));
+    const acts=el('div',{class:'actions'});
+    if(!res)acts.append(el('button',{type:'button',class:'btn sm',text:'📋 Copiar do mês anterior',onclick:()=>mtCopiar(m,fr)}));
+    acts.append(el('button',{type:'button',class:'btn primary sm',text:res?'Salvar atualização de '+fr:'Salvar metas de '+fr,onclick:()=>mtSalvar(m,fr,modo)}));
+    nodes.push(acts);
+    const sem=iso(mondayOf(new Date())),atual=m===iso(new Date()).slice(0,7);
+    const feitos=lista.filter(x=>{const d=resDocDe(m,x.n);if(!d)return false;const mt=resMetas(d);return res?(d.avaliacoes||[]).some(h=>!atual||h.sem===sem):(mt.vendas>0||mt.abN>0);}).length;
+    c.append(foldBox('mt'+modo+fr+m,'🏪 '+fr+' · '+feitos+' de '+lista.length+(res?(atual?' atualizados nesta semana':' atualizados'):' com meta'),nodes));
+  });
+  body.append(c);
+}
+function mtPlacar(body,m){
+  const rk=vendRank(monthStats(m).rs);
+  const c=el('div',{class:'card'},el('h2',null,el('span',{class:'ico o',text:'🏁'}),'Placar do mês'),
+    el('p',{class:'hint',text:'Parcial de '+agMesNome(m)+'. Quem tem mais selos fica na frente (🎯 meta de vendas, 🆕 aberturas acima do normal); depois vale a pontuação. Só a gerência e a supervisão veem.'}));
+  if(!rk.length)c.append(el('p',{class:'hint',text:'Cadastre as metas dos vendedores abaixo para o placar aparecer.'}));
+  else c.append(rankRows(rk,m>=iso(new Date()).slice(0,7)));
+  const todos=[];S.cfg.franquias.forEach(fr=>(S.cfg.vendedores[fr]||[]).forEach(n=>todos.push(n)));
+  const sem=todos.filter(n=>!rk.some(o=>o.key===n));
+  if(sem.length)c.append(el('p',{class:'hint',text:'Sem metas cadastradas: '+listPt(sem)+'.'}));
+  body.append(c);
+}
+function renderMetas(){
+  const body=$('#mtBody');if(!body)return;
+  body.textContent='';
+  if(!agPode()||S.mode!=='db'||!S.cfgOk||!S.recsOk){body.append(el('p',{class:'hint',text:'Carregando…'}));return;}
+  const m=S.mtMes;
+  body.append(el('div',{class:'card'},el('h2',null,el('span',{class:'ico g',text:'🎯'}),'Metas e resultados'),
+    el('p',{class:'hint',text:'Digite as metas do mês e, uma vez por semana, o acumulado de cada vendedor. O app calcula o ritmo, os selos e a pontuação.'}),
+    el('div',{class:'agnav'},
+      el('button',{type:'button',class:'btn sm','aria-label':'Mês anterior',text:'‹ '+agMesNome(prevKey(m)),onclick:()=>{S.mtMes=prevKey(m);renderAll();}}),
+      el('b',{text:agMesNome(m)+' de '+m.slice(0,4)}),
+      el('button',{type:'button',class:'btn sm','aria-label':'Próximo mês',text:agMesNome(nextKey(m))+' ›',onclick:()=>{S.mtMes=nextKey(m);renderAll();}}))));
+  mtPlacar(body,m);
+  mtBloco(body,m,'res');
+  mtBloco(body,m,'metas');
+}
+
+/* ---------- vendedor: progresso na meta do mês ---------- */
+function vendMetas(body){
+  const v=S.vend.name,m=iso(new Date()).slice(0,7),d=resDocDe(m,v);
+  if(!d)return;
+  const mt=resMetas(d),fz=resFeito(d);
+  if(!(mt.vendas>0||mt.abN>0))return;
+  const c=el('div',{class:'card mtcard'},el('h2',null,el('span',{class:'ico g',text:'🏁'}),'Sua meta de '+agMesNome(m)));
+  const rows=[],msgs=[];
+  if(mt.vendas>0){
+    const p=fz.vendas/mt.vendas,rt=mtRitmo(m,mt.vendas,fz.vendas);
+    rows.push({label:'💰 Vendas',value:Math.min(100,p*100),max:100,sub:fmtBRL(fz.vendas)+' de '+fmtBRL(mt.vendas)+(p>=1?' ('+fmtPct(p)+')':' · esperado até hoje: '+Math.round(rt.esp*100)+'%')});
+    msgs.push(p>=1?'🎯 Meta de vendas batida! Parabéns!':p>=rt.esp?'Você está à frente do ritmo. Segue assim! 🚀':'Dá tempo de virar: faltam '+fmtBRL(rt.faltam)+' (cerca de '+fmtBRL(rt.porSemana)+' por semana).');
+  }
+  if(mt.abN>0){
+    const alvo=mt.abA>mt.abN?mt.abA:Math.ceil(mt.abN*1.2);
+    rows.push({label:'🆕 Aberturas de clientes',value:Math.min(100,fz.ab/mt.abN*100),max:100,sub:fz.ab+' de '+mt.abN+(mt.abA>mt.abN?' · acima do normal: '+mt.abA:'')});
+    msgs.push(fz.ab>=alvo?'🚀 Abertura acima do normal! Isso é de campeão!':fz.ab>=mt.abN?'Meta de aberturas batida! Faltam '+(alvo-fz.ab)+' para ficar acima do normal.':'Faltam '+(mt.abN-fz.ab)+(mt.abN-fz.ab>1?' aberturas':' abertura')+' para a meta. Cada cliente novo conta!');
+  }
+  const b=el('div');c.append(b);barRows(b,rows,x=>Math.round(x)+'%');
+  msgs.forEach(t=>c.append(el('p',{class:'hint mtmsg',text:t})));
+  const ult=(d.avaliacoes||[]).slice(-1)[0];
+  if(ult&&ult.em)c.append(el('small',{class:'hint',text:'Atualizado em '+dm(ult.em)+'.'}));
+  body.append(c);
 }
 
 function failMsg(e){
@@ -3350,11 +4343,14 @@ function renderVend(){
   const body=$('#vBody');body.textContent='';
   if(S.vtab==='fotos'){vendFotos(body);return;}
   if(S.vtab==='aval'){vendAval(body);return;}
+  if(S.vtab==='agenda'){vendAgendaTab(body);return;}
   vendTarefas(body,vendTasks());
 }
 function vendTarefas(body,all){
   vendHello(body);
   trackSeen(all.filter(t=>t.status!=='feito').map(t=>t.id));
+  vendMetas(body);
+  vendAgenda(body);
   vendTermometro(body);
   vendGamif(body);
   const open=all.filter(t=>t.status!=='feito'),late=open.filter(t=>t.prazo&&diffDays(t.prazo)<0);
@@ -3397,7 +4393,7 @@ function vTaskCard(t){
   const c=el('div',{class:'kcard mini '+(ag?'agenda':'desafio')+(pb.c==='bad'&&et!=='feito'?' late':'')+(et==='feito'?' donec':'')},
     el('div',{class:'ktask',text:(ag?'🎯 ':'📅 ')+t.texto}),
     t.detalhe?el('small',{text:(ag?'Contato: ':'Motivo: ')+t.detalhe}):null,
-    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),el('small',{text:'Combinado com '+(rec.supervisor||'o supervisor')+' · '+dm(rec.data)})));
+    el('div',{class:'taskmeta'},el('span',{class:'badge '+pb.c,text:pb.t}),el('small',{text:'Combinado com '+(rec.supervisor||'o supervisor')+' · '+(agIsDoc(rec)?agMesNome(rec.mes):dm(rec.data))})));
   if(!ag){
     const fs=fotosOf(t);
     if(fs.length){const g=el('div',{class:'thumbs'});fs.forEach(f=>g.append(thumb(f)));c.append(g);}
@@ -3419,6 +4415,7 @@ function vTaskCard(t){
     b.append(el('button',{type:'button',class:'btn sm',text:'Reabrir',onclick:()=>moveEtapa(t,'fazer')}));
   }
   c.append(b);
+  agVendExtra(t,c);
   return c;
 }
 async function moveEtapa(t,et,res){
@@ -3465,7 +4462,7 @@ async function moveEtapa(t,et,res){
 }
 /* ---------- fotos dos eventos ---------- */
 const fotosOf=t=>S.fotos.filter(f=>f.rid===t.rid&&f.tid===t.id);
-/* cliente da foto: vem do compromisso ("Café com Aneto — Loja X" => "Loja X") e fica gravado e carimbado na própria imagem */
+/* cliente da foto: vem do compromisso ("Café com Aneethun — Loja X" => "Loja X") e fica gravado e carimbado na própria imagem */
 const clienteDe=txt=>{const p=String(txt||'').split(' — ');return p.length>1?p.slice(1).join(' — ').trim():'';};
 const fotoCliente=f=>f.cliente||clienteDe(f.texto);
 const fotoEvento=f=>String(f.texto||'Evento').split(' — ')[0];
@@ -3641,7 +4638,7 @@ async function sendAvalSup(){
       if(S.mode==='db'){await db.doc('avalSup/'+doc.id).set(doc);if(!S.avalSup.some(a=>a.id===doc.id))S.avalSup.unshift(doc);}
       else{S.avalSup.unshift(doc);LS.set('rs_avalsup',S.avalSup);}
     });
-    S.vaval=null;S.writeFail=false;toast('Avaliação enviada. Obrigado! ⭐');renderAll();
+    S.vaval=null;S.writeFail=false;toast('Avaliação enviada. Obrigado! ⭐');renderAll();motivar(notas);
   }catch(e){toast(failMsg(e));renderAll();}
 }
 function avalSupChip(body){
@@ -4298,7 +5295,7 @@ function renderCfg(){
 }
 function initCfgInputs(){
   $('#cWa').value=S.cfg.whatsapp||'';$('#cMail').value=S.cfg.email||'';
-  $('#cBonus').value=String(S.cfg.bonusAbertura==null?5:S.cfg.bonusAbertura);
+  $('#cBonus').value=fmtBonus(S.cfg.campeaoAbertura==null?5:S.cfg.campeaoAbertura);
 }
 
 /* ---------- estrutura ---------- */
@@ -4314,15 +5311,15 @@ function renderBanner(){
   if(S.viewing)b.append(el('div',{class:'notice info avalchip'},el('div',{text:'👁 Você está vendo o app como '+S.viewing+'.'}),
     el('button',{type:'button',class:'btn sm',text:'Voltar ao modo gerente',onclick:()=>viewAs('gerente')})));
   if(showAl)b.append(el('div',{class:'notice alerta'},el('div',null,el('b',{text:'🔴 '+al.n+(al.n>1?' compromissos atrasados':' compromisso atrasado')}),el('div',{text:al.txt})),
-    el('button',{type:'button',class:'btn sm',text:'Ver atrasados',onclick:()=>{S.pendF='prosp';setTab('pend');}})));
-  b.hidden=!(msg||showAl||S.viewing);
+    el('button',{type:'button',class:'btn sm',text:'Ver atrasados',onclick:()=>{S.pendF=allTarefas(S.recs).some(t=>t.tipo==='prospeccao'&&t.status!=='feito'&&t.prazo&&diffDays(t.prazo)<0)?'prosp':'agenda';setTab('pend');}})));
+  const agb=agBanner(b);b.hidden=!(msg||showAl||S.viewing||agb);
 }
 function renderTabs(){
   const t=S.tab;
   $('#tabPend').hidden=t!=='pend';
   const pn=allTarefas(S.recs).filter(x=>x.status!=='feito').length;
   $('#pendN').hidden=!pn;$('#pendN').textContent=String(pn);
-  $('#tabNova').hidden=t!=='nova';$('#tabDia').hidden=t!=='dia';$('#tabResumo').hidden=t!=='resumo';$('#tabMes').hidden=t!=='mes';$('#tabCfg').hidden=t!=='cfg';
+  $('#tabNova').hidden=t!=='nova';$('#tabDia').hidden=t!=='dia';$('#tabResumo').hidden=t!=='resumo';$('#tabMes').hidden=t!=='mes';$('#tabMetas').hidden=t!=='metas';$('#tabCfg').hidden=t!=='cfg';
   $$('#supTabs .tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
   $('#formView').hidden=!!S.done;$('#doneView').hidden=!S.done;
   $('#saveBar').hidden=!(t==='nova'&&!S.done);
@@ -4333,12 +5330,12 @@ function renderTabs(){
   $('#supTabs').hidden=vm;$('#vTabs').hidden=!vm;$('#btnCfg').hidden=vm;
   $('#tabVL').hidden=vm||t!=='vl';
   $('#tabV').hidden=!vm;
-  if(vm){['#tabNova','#tabDia','#tabResumo','#tabMes','#tabCfg','#tabPend'].forEach(s=>{$(s).hidden=true;});$('#saveBar').hidden=true;}
+  if(vm){['#tabNova','#tabDia','#tabResumo','#tabMes','#tabMetas','#tabCfg','#tabPend'].forEach(s=>{$(s).hidden=true;});$('#saveBar').hidden=true;}
   document.querySelector('.toast').style.setProperty('bottom','calc('+(t==='nova'&&!S.done?'150':'90')+'px + env(safe-area-inset-bottom,0px))');
 }
 function setTab(t){
   S.tab=t;S.confirmDel=null;
-  if(t==='mes'||t==='pend'||t==='resumo'||t==='dia'||t==='nova')refreshData(false);
+  if(t==='mes'||t==='pend'||t==='resumo'||t==='dia'||t==='nova'||t==='metas')refreshData(false);
   if(t==='cfg')initCfgInputs();
   renderAll();window.scrollTo(0,0);
 }
@@ -4352,6 +5349,7 @@ function renderAll(){
   if(S.tab==='dia')renderDia();
   if(S.tab==='resumo')renderResumo();
   if(S.tab==='mes')renderMes();
+  if(S.tab==='metas')renderMetas();
   if(S.tab==='cfg')renderCfg();
   if(S.tab==='pend')renderPend();
 }
@@ -4435,7 +5433,7 @@ function bind(){
     const bad=Object.values(S.pinsPend||{}).some(v=>String(v||'').trim()&&!/^\d{4,6}$/.test(String(v).trim()));
     if(bad){toast('A senha precisa ter de 4 a 6 números.');return;}
     S.cfg.whatsapp=$('#cWa').value.trim();S.cfg.email=$('#cMail').value.trim();
-    if(isGer()||S.mode==='local'){const bv=parseInt($('#cBonus').value,10);S.cfg.bonusAbertura=isNaN(bv)?5:Math.max(0,Math.min(10,bv));}
+    if(isGer()||S.mode==='local'){const bv=Math.round(parseFloat(String($('#cBonus').value).replace(',','.'))*10)/10;S.cfg.campeaoAbertura=isNaN(bv)?5:Math.max(0,Math.min(10,bv));}
     await applyPins();
     const lk=lockKey();if(lk&&pinHash(lk))markUnlocked(lk);
     await saveCfg();toast('Configurações salvas');setTab('nova');
