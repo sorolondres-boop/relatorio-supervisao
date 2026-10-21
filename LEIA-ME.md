@@ -103,6 +103,15 @@ mensagem é mais forte e acolhedora, para ele não desanimar. Nunca fala em nota
 
 O visual padrão é o **Jogo** (fundo escuro com brilhos, trilha de progresso e controles em esfera). Cada pessoa pode trocar em Configurações → Aparência para **Claro**, **Escuro** ou **Automático** (segue o celular). A escolha fica salva no aparelho.
 
+Se a escolha de aparência era da versão antiga, o app volta para o **Jogo** uma vez; depois é só escolher de novo em
+Configurações → Aparência.
+
+## Versão nova do app
+
+O GitHub Pages guarda a página por até 10 minutos. Por isso o app confere sozinho se saiu uma versão mais nova: ao abrir,
+ele se atualiza uma vez; depois, ao voltar para o app, aparece o botão verde **Tem versão nova do app** para atualizar
+quando quiser.
+
 ## Instalar no celular
 
 - **Android (Chrome):** abra o endereço, toque nos três pontinhos e em **Instalar app**

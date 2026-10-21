@@ -1,5 +1,5 @@
 /* Service worker: o app abre mesmo com sinal fraco. Os dados (Supabase) nunca ficam em cache. */
-const VERSAO = 'rs-v3';
+const VERSAO = 'rs-v4';
 const BASE = ['./', 'index.html', 'manifest.webmanifest', 'supabase-config.js',
   'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'favicon.png'];
 
@@ -20,6 +20,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.hostname.endsWith('.supabase.co') || url.hostname.endsWith('.supabase.in')) return; // dados: sempre da rede
+  if (url.searchParams.has('rsv')) return; // conferência de versão nova do app: sempre da rede, sem guardar
 
   // Páginas: tenta a rede primeiro e, sem sinal, abre a última versão guardada.
   if (req.mode === 'navigate') {

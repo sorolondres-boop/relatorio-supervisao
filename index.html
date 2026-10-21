@@ -15,8 +15,9 @@
 <meta name="apple-mobile-web-app-title" content="Gestão à Vista">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script>
-/* Visual claro por padrão. Quem preferir pode escolher Escuro ou Automático em Configurações. */
-try{var t=(localStorage.getItem('rs_tema')||'').replace(/"/g,''),h=document.documentElement;if(t==='')t='game';if(t==='dark'||t==='game')h.setAttribute('data-theme',t);else if(t!=='auto')h.setAttribute('data-theme','light');if(t==='game')h.setAttribute('data-forma','jogo');}catch(e){document.documentElement.setAttribute('data-theme','game');document.documentElement.setAttribute('data-forma','jogo');}
+/* Visual Jogo por padrão. Quem preferir pode escolher Claro, Escuro ou Automático em Configurações (rs_tema3: a escolha da versão antiga, rs_tema, não vale mais). */
+window.__BUILD='20261021141324';
+try{var t=(localStorage.getItem('rs_tema3')||'').replace(/"/g,''),h=document.documentElement;if(t==='')t='game';if(t==='dark'||t==='game')h.setAttribute('data-theme',t);else if(t!=='auto')h.setAttribute('data-theme','light');if(t==='game')h.setAttribute('data-forma','jogo');}catch(e){document.documentElement.setAttribute('data-theme','game');document.documentElement.setAttribute('data-forma','jogo');}
 </script>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -1481,6 +1482,42 @@ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
   let tinha=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{if(tinha)location.reload();tinha=true;});
+}
+
+/* Versão nova: o GitHub Pages guarda a página por até 10 minutos, então o app confere sozinho se saiu uma versão mais nova.
+   Logo ao abrir, ele se atualiza uma vez; depois (ao voltar para o app), mostra um botão para o usuário atualizar quando quiser. */
+if(/^https?:$/.test(location.protocol)&&window.__BUILD){
+  let avisou=false,ult=0;
+  const atualizar=async()=>{
+    try{
+      (await caches.keys()).forEach(k=>caches.delete(k));
+      (await navigator.serviceWorker.getRegistrations()).forEach(r=>r.unregister());
+    }catch(e){}
+    location.reload();
+  };
+  const mostrar=()=>{
+    const b=document.createElement('button');
+    b.type='button';b.textContent='🔄 Tem versão nova do app. Toque para atualizar';
+    b.style.cssText='display:block;width:calc(100% - 32px);max-width:560px;margin:12px auto 0;min-height:52px;padding:8px 16px;border-radius:999px;border:0;background:#34D399;color:#04261b;font:700 15px/1.2 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);cursor:pointer';
+    b.addEventListener('click',()=>{b.textContent='Atualizando…';atualizar();});
+    const cab=document.querySelector('header.top');
+    if(cab&&cab.parentNode)cab.parentNode.insertBefore(b,cab.nextSibling);else document.body.append(b);
+  };
+  const conferir=abertura=>{
+    const agora=Date.now();
+    if(avisou||agora-ult<120000)return;
+    ult=agora;
+    fetch(location.pathname+'?rsv='+agora,{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{
+      const m=t.match(/__BUILD='([0-9]+)'/);
+      if(!m||m[1]===window.__BUILD||avisou)return;
+      let jaTentou=false;
+      try{jaTentou=!!sessionStorage.getItem('rs_auto_att');}catch(e){}
+      if(abertura&&!jaTentou){try{sessionStorage.setItem('rs_auto_att','1');}catch(e){}atualizar();return;}
+      avisou=true;mostrar();
+    }).catch(()=>{});
+  };
+  window.addEventListener('load',()=>setTimeout(()=>conferir(true),1500));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')conferir(false);});
 }
 })();
 </script>
@@ -3303,10 +3340,10 @@ function renderConta(){
   c.hidden=!sp;
   if(!sp)return;
   $('#cContaInfo').textContent='Conectado como '+(sp.email||'')+(sp.perfil?' · '+(ROT_PAPEL[sp.perfil.papel]||''):'')+'.';
-  const tema=LS.get('rs_tema','game');
+  const tema=LS.get('rs_tema3','game');
   const ct=$('#cTema');ct.textContent='';
   [['game','🎮 Jogo'],['light','☀️ Claro'],['dark','🌙 Escuro'],['auto','📱 Automático']].forEach(([v,t])=>ct.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(tema===v),text:t,onclick:()=>{
-    LS.set('rs_tema',v);
+    LS.set('rs_tema3',v);
     const H=document.documentElement;
     if(v==='auto')H.removeAttribute('data-theme');else H.setAttribute('data-theme',v);
     if(v==='game')H.setAttribute('data-forma','jogo');else H.removeAttribute('data-forma');
