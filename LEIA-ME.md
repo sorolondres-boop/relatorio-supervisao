@@ -77,6 +77,22 @@ fica na frente; entre iguais, vale a pontuação. **Classes:** 90 ou mais Craque
 
 A **pontuação extra de tarefas** (nota de 0 a 5 no cartão do Mês) é a mesma conta das tarefas, e vale 25 dos 100 pontos.
 
+## Corrida maluca e avatares (só gerência e supervisão)
+
+- Na aba **Metas**, o card **Corrida maluca do mês** junta as 3 franquias numa pista. Cada vendedor é um kart (a cor mostra a
+  franquia) com a cabecinha dele, andando até a linha de chegada, que é **100% da meta de vendas**. O pontilhado amarelo é o
+  ritmo esperado para hoje. Chama = passou da meta, fumaça = abaixo do ritmo, chave inglesa = ainda sem vendas. Os botões das
+  franquias filtram a pista e o narrador resume quem lidera. Os karts largam animados (com "reduzir movimento" ligado no
+  celular, aparecem direto na posição).
+- **Avatares:** cada faixa da pista tem um ícone 📷 para anexar o **avatar ou a foto** do vendedor (o mesmo botão existe no
+  card **Avatares da equipe**). O app recorta (arraste a imagem e use o zoom) e guarda **só o recorte pequeno**, com cerca de
+  5 KB, que aparece dentro do kart. Em **Estilo**, escolha **Original** para um avatar que já está pronto (a imagem entra como
+  está) ou um desenho para fotos (Suave, Desenho e Quadrinho). A foto enviada não é guardada nem mandada para ninguém. O
+  desenho é um filtro de imagem feito no próprio aparelho, não uma caricatura feita por inteligência artificial. Dá para
+  trocar a imagem quando quiser. Sem imagem, aparece a inicial do nome.
+- O avatar também aparece nas listas da gerência e da supervisão. O vendedor não recebe os avatares nem vê a corrida.
+- Os avatares ficam no banco em `config/avatares`, que só gerente e supervisor leem e gravam.
+
 ## Tela motivacional do vendedor
 
 Toda vez que o vendedor envia a avaliação do supervisor, aparece uma tela com uma mensagem de motivação e o lado bom do
@@ -114,6 +130,7 @@ O visual padrão é o **Jogo** (fundo escuro com brilhos, trilha de progresso e 
   entrega uma senha de uso único (vale 10 minutos) e só aceita criar a conta com ela.
 - O vendedor lê só as saídas em que participa, as próprias fotos, a própria avaliação e os próprios acessos, e só consegue atualizar tarefas e prospecções. Ele não altera vendas, visitas, pedidos,
   aberturas, horas nem avaliações, não cria nem apaga saídas e não mexe nas configurações.
+- Os avatares ficam na coleção `config`, que o vendedor não lê (ele só recebe a parte pública da configuração).
 - As metas e os resultados do mês ficam em campos que o banco já protege contra edição do vendedor: ele só vê os
   próprios números e não consegue alterá-los.
 - O pedido de mudança da agenda vale pelo app (o vendedor pede, o supervisor decide). No banco, o vendedor continua

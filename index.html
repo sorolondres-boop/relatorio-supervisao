@@ -772,6 +772,46 @@ button.vcell{cursor:pointer;background:var(--surface2);color:var(--ink)}
 .mtf input{width:100%;min-width:0}
 .mtmsg{margin:8px 0 0;font-weight:600;color:var(--ink)}
 </style>
+<style id="corrida">
+/* ---- avatares com foto ---- */
+.kav.foto{background-size:cover;background-position:center;color:transparent;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+.avrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.avrow:first-child{border-top:0}
+.avrow b{flex:1;min-width:0}
+/* ---- editor da foto ---- */
+.avview{position:fixed;inset:0;z-index:460;background:rgba(4,4,8,.78);backdrop-filter:blur(5px);display:flex;padding:16px;overflow:auto}
+.avcard{margin:auto;width:100%;max-width:380px;border-radius:26px;padding:18px;background:var(--surface);border:1.5px solid var(--line);color:var(--ink);display:flex;flex-direction:column;gap:10px}
+.avcard h2{margin:0;font-size:20px}
+.avcard .lbl{margin:0}
+.avcard input[type=range]{width:100%;min-height:36px;accent-color:var(--teal)}
+.avpair{display:flex;gap:12px;justify-content:center;align-items:flex-start}
+.avpair figure{margin:0;text-align:center;font-size:12px;color:var(--ink2)}
+.avpair figcaption{margin-top:4px}
+.avwrap{position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden}
+.avwrap::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 200px rgba(0,0,0,.5);pointer-events:none}
+.avstage{display:block;width:150px;height:150px;touch-action:none;cursor:grab;background:#000}
+.avres{display:block;width:150px;height:150px;border-radius:50%;background:#222;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+/* ---- corrida maluca ---- */
+.crnarra{margin:10px 0 2px;display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px}
+.crfil{margin:10px 0 0}
+.pista{margin-top:12px;display:flex;flex-direction:column;gap:12px}
+.crnome{display:flex;align-items:baseline;gap:8px;font-size:15px}
+.crnome{align-items:center}
+.crnome b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crpct{font-weight:800;font-size:16px}
+.crcam{flex:none;width:38px;height:38px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--surface2);color:inherit;font-size:17px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.crsub{display:block;color:var(--ink2);font-size:12px;margin:1px 0 3px}
+.crtrilho{position:relative;height:50px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.crtrilho::before{content:'';position:absolute;left:12px;right:16px;top:50%;border-top:2px dashed var(--line)}
+.crfim{position:absolute;right:0;top:0;bottom:0;width:10px;border-radius:0 13px 13px 0;background:conic-gradient(#fff 25%,#111 0 50%,#fff 0 75%,#111 0) 0 0/10px 10px}
+.crritmo{position:absolute;top:3px;bottom:3px;width:0;border-left:2px dashed rgba(251,191,36,.85)}
+.crcarro{position:absolute;top:4px;width:66px;height:42px;transition:left 2.4s cubic-bezier(.25,.7,.25,1)}
+.crkart{position:absolute;left:0;bottom:0;width:66px;height:36px;display:block}
+.crkart svg{display:block;width:100%;height:100%}
+.crav{position:absolute;left:21px;top:-4px;width:30px;height:30px;margin:0;border:2px solid #fff;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.crchama{position:absolute;left:-15px;bottom:6px;font-size:17px;line-height:1}
+@media (prefers-reduced-motion:reduce){.crcarro{transition:none!important}}
+</style>
 <style id="game">
 /* ===== Tema "Jogo": fundo galáctico, brilhos, cantos bem redondos e controles de joystick ===== */
 :root[data-theme="game"]{
@@ -1933,7 +1973,7 @@ const DIAS_LONGO=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábad
 function kanbanCard(t,opt){
   const rec=t.rec,vs=tarefaVend(t),ag=t.tipo==='prospeccao',pb=prazoBadge(t.prazo,t.status);
   const who=el('div',{class:'kwho'});
-  vs.slice(0,2).forEach(v=>{const a=el('span',{class:'kav',text:(v[0]||'?').toUpperCase()});a.style.setProperty('background',avColor(v));who.append(a);});
+  vs.slice(0,2).forEach(v=>who.append(vavatar(v)));
   who.append(el('span',{text:listPt(vs)||'Sem vendedor'}));
   const c=el('div',{class:'kcard '+(ag?'agenda':'desafio')+(pb.c==='bad'?' late':'')+(opt&&opt.mini?' mini':'')},
     opt&&opt.noWho?null:who,
@@ -1949,7 +1989,7 @@ function kanbanCard(t,opt){
 function vavatar(name){
   const a=el('span',{class:'kav',text:(String(name)[0]||'?').toUpperCase()});
   a.style.setProperty('background',avColor(name));
-  return a;
+  return avFoto(a,name);
 }
 function groupCards(tasks){
   const g=new Map();
@@ -2427,7 +2467,7 @@ function supervisorCards(body,ws){
       el('p',{class:'hint',text:ok+' de '+tot+' compromissos cumpridos'+(late?' · '+late+' atrasado'+(late>1?'s':''):' · tudo em dia')}));
     vs.forEach(o=>{
       const row=el('div',{class:'srow'+(o.late.length?' late':'')});
-      const a=el('span',{class:'kav',text:(o.key[0]||'?').toUpperCase()});a.style.setProperty('background',avColor(o.key));
+      const a=vavatar(o.key);
       row.append(el('div',{class:'kwho'},a,el('span',{text:o.key}),el('b',{class:'cnt2',text:o.ok+'/'+o.n})));
       const bar=el('div',{class:'bar'}),bi=el('i');bi.style.setProperty('width',(o.n?o.ok/o.n*100:0)+'%');bar.append(bi);row.append(bar);
       o.late.forEach(t=>row.append(el('div',{class:'taskmeta'},el('span',{class:'badge bad',text:'atrasado há '+(-diffDays(t.prazo))+' d'}),el('small',{text:(t.tipo==='prospeccao'?'🎯 ':'📅 ')+t.texto}))));
@@ -4142,9 +4182,11 @@ function renderMetas(){
       el('button',{type:'button',class:'btn sm','aria-label':'Mês anterior',text:'‹ '+agMesNome(prevKey(m)),onclick:()=>{S.mtMes=prevKey(m);renderAll();}}),
       el('b',{text:agMesNome(m)+' de '+m.slice(0,4)}),
       el('button',{type:'button',class:'btn sm','aria-label':'Próximo mês',text:agMesNome(nextKey(m))+' ›',onclick:()=>{S.mtMes=nextKey(m);renderAll();}}))));
+  mtCorrida(body,m);
   mtPlacar(body,m);
   mtBloco(body,m,'res');
   mtBloco(body,m,'metas');
+  mtAvatares(body);
 }
 
 /* ---------- vendedor: progresso na meta do mês ---------- */
@@ -4170,6 +4212,284 @@ function vendMetas(body){
   const ult=(d.avaliacoes||[]).slice(-1)[0];
   if(ult&&ult.em)c.append(el('small',{class:'hint',text:'Atualizado em '+dm(ult.em)+'.'}));
   body.append(c);
+}
+/* ---------- corrida maluca (pista de vendas das franquias) e avatares da equipe ----------
+   Só gerência e supervisão veem. A pista usa a meta de vendas e o acumulado do mês da aba Metas: cada vendedor é um kart com a
+   cabecinha (avatar) e anda até a linha de chegada, que é 100% da meta. O pontilhado mostra o ritmo esperado para hoje.
+   O avatar nasce de uma foto: o recorte é feito e desenhado aqui mesmo no aparelho (filtro de imagem, sem IA e sem enviar a foto).
+   Só o desenho pequeno fica guardado, em config/avatares = { fotos: { Nome: { u: imagem em texto, t: carimbo } } }.
+   O vendedor não lê a coleção config, então nunca recebe os avatares. */
+Object.assign(S,{avatares:{},avOn:false,crFr:'',crT:0});
+
+/* ---------- avatares: guardar, ler e mostrar ---------- */
+function avSync(){
+  if(S.avOn||!agPode()||S.mode!=='db'||!S.cfgOk)return;
+  S.avOn=true;
+  db.doc('config/avatares').onSnapshot(snap=>{
+    const f=snap.exists?(snap.data()||{}).fotos:null;
+    S.avatares=f&&typeof f==='object'?f:{};
+    renderAll();
+  },()=>{});
+}
+function avFoto(a,nome){
+  const f=S.avatares[nome];
+  if(!f||!f.u)return a;
+  a.textContent='';a.classList.add('foto');
+  a.style.setProperty('background-image','url('+f.u+')');
+  a.style.setProperty('background-size','cover');a.style.setProperty('background-position','center');a.style.setProperty('background-repeat','no-repeat');
+  return a;
+}
+async function avSalvar(nome,u){
+  return agFazer(()=>enqueue(async()=>{
+    const s=await db.doc('config/avatares').get();
+    const fotos=Object.assign({},s.exists?(s.data()||{}).fotos:{});
+    if(u)fotos[nome]={u:u,t:Date.now()};else delete fotos[nome];
+    await db.doc('config/avatares').set({fotos:fotos});
+    S.avatares=fotos;
+  }),u?'Avatar de '+nome+' salvo ✓':'Avatar de '+nome+' removido');
+}
+
+/* ---------- avatares: a foto vira desenho ---------- */
+const AV_N=128;
+const AV_ESTILOS=[
+  {nome:'Original',orig:true},
+  {nome:'Suave',v:9,s:7,sat:1.15,borda:.35,t0:22,t1:40},
+  {nome:'Desenho',v:6,s:5,sat:1.3,borda:.75,t0:16,t1:30},
+  {nome:'Quadrinho',v:4,s:4,sat:1.45,borda:1,t0:12,t1:22}
+];
+/* quadrado da foto: centro (cx, cy) de 0 a 1 e zoom a partir de 1, sempre dentro da foto */
+function avQuadro(W,H,cx,cy,zoom){
+  const lado=Math.min(W,H)/zoom;
+  return {lado:lado,sx:Math.max(0,Math.min(W-lado,cx*W-lado/2)),sy:Math.max(0,Math.min(H-lado,cy*H-lado/2))};
+}
+/* recorta e reduz em duas etapas para a foto não serrilhar */
+function avRecorte(img,cx,cy,zoom){
+  const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height,q=avQuadro(W,H,cx,cy,zoom);
+  const mk=n=>{const c=document.createElement('canvas');c.width=c.height=n;return c;};
+  const meio=mk(AV_N*4),g1=meio.getContext('2d');
+  g1.fillStyle='#fff';g1.fillRect(0,0,meio.width,meio.height);
+  g1.imageSmoothingQuality='high';g1.drawImage(img,q.sx,q.sy,q.lado,q.lado,0,0,meio.width,meio.height);
+  const c=mk(AV_N),g=c.getContext('2d',{willReadFrequently:true});
+  g.imageSmoothingQuality='high';g.drawImage(meio,0,0,AV_N,AV_N);
+  return c;
+}
+let AV_LUT=null;
+/* alisa as cores sem borrar os contornos (filtro bilateral), reduz as cores em faixas e desenha o contorno escuro */
+function avDesenho(c,est){
+  if(est.orig)return c;
+  const n=c.width,g=c.getContext('2d'),im=g.getImageData(0,0,n,n),px=im.data,tot=n*n;
+  if(!AV_LUT){AV_LUT=new Float32Array(3100);for(let i=0;i<AV_LUT.length;i++)AV_LUT[i]=Math.exp(-(i*64+32)/(2*2700));}
+  let r=new Float32Array(tot),gr=new Float32Array(tot),b=new Float32Array(tot);
+  for(let i=0;i<tot;i++){r[i]=px[i*4];gr[i]=px[i*4+1];b[i]=px[i*4+2];}
+  const R=3,ws=[];
+  for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++)ws.push(Math.exp(-(dx*dx+dy*dy)/8));
+  for(let pass=0;pass<2;pass++){
+    const r2=new Float32Array(tot),g2=new Float32Array(tot),b2=new Float32Array(tot);
+    for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+      const p=y*n+x;let sr=0,sg=0,sb=0,sw=0,k=0;
+      for(let dy=-R;dy<=R;dy++){
+        const yy=y+dy;
+        for(let dx=-R;dx<=R;dx++,k++){
+          const xx=x+dx;
+          if(yy<0||yy>=n||xx<0||xx>=n)continue;
+          const q=yy*n+xx,da=r[q]-r[p],db=gr[q]-gr[p],dc=b[q]-b[p],w=ws[k]*AV_LUT[(da*da+db*db+dc*dc)>>6];
+          sr+=r[q]*w;sg+=gr[q]*w;sb+=b[q]*w;sw+=w;
+        }
+      }
+      r2[p]=sr/sw;g2[p]=sg/sw;b2[p]=sb/sw;
+    }
+    r=r2;gr=g2;b=b2;
+  }
+  const Y=new Float32Array(tot),E=new Float32Array(tot);
+  for(let i=0;i<tot;i++)Y[i]=.299*r[i]+.587*gr[i]+.114*b[i];
+  for(let y=1;y<n-1;y++)for(let x=1;x<n-1;x++){
+    const p=y*n+x,
+      gx=-Y[p-n-1]+Y[p-n+1]-2*Y[p-1]+2*Y[p+1]-Y[p+n-1]+Y[p+n+1],
+      gy=-Y[p-n-1]-2*Y[p-n]-Y[p-n+1]+Y[p+n-1]+2*Y[p+n]+Y[p+n+1];
+    E[p]=Math.sqrt(gx*gx+gy*gy)/4;
+  }
+  for(let i=0;i<tot;i++){
+    const R1=r[i]/255,G1=gr[i]/255,B1=b[i]/255,mx=Math.max(R1,G1,B1),mn=Math.min(R1,G1,B1),d=mx-mn;
+    let h=0;
+    if(d>0){h=mx===R1?((G1-B1)/d)%6:mx===G1?(B1-R1)/d+2:(R1-G1)/d+4;h/=6;if(h<0)h+=1;}
+    let s=Math.min(1,(mx?d/mx:0)*est.sat),v=mx;
+    v=Math.round(v*(est.v-1))/(est.v-1);s=Math.round(s*(est.s-1))/(est.s-1);
+    const hh=h*6,ii=Math.floor(hh)%6,f=hh-Math.floor(hh),pp=v*(1-s),qq=v*(1-f*s),tt=v*(1-(1-f)*s);
+    const o=[[v,tt,pp],[qq,v,pp],[pp,v,tt],[pp,qq,v],[tt,pp,v],[v,pp,qq]][ii];
+    const e=Math.min(1,Math.max(0,(E[i]-est.t0)/est.t1))*est.borda*.9;
+    px[i*4]=o[0]*255*(1-e)+30*e;px[i*4+1]=o[1]*255*(1-e)+22*e;px[i*4+2]=o[2]*255*(1-e)+40*e;px[i*4+3]=255;
+  }
+  g.putImageData(im,0,0);
+  return c;
+}
+
+/* ---------- avatares: escolher a foto, centralizar o rosto e conferir o desenho ---------- */
+function avEscolher(nome){
+  if(!S.canWrite){toast('Seu acesso é só de leitura.');return;}
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';inp.hidden=true;
+  inp.addEventListener('change',()=>{
+    const f=inp.files&&inp.files[0];inp.remove();
+    if(f)avAbrirFoto(nome,f);
+  });
+  document.body.append(inp);inp.click();
+}
+function avAbrirFoto(nome,arq){
+  const url=URL.createObjectURL(arq),img=new Image();
+  img.onload=()=>avEditor(nome,img,()=>URL.revokeObjectURL(url));
+  img.onerror=()=>{URL.revokeObjectURL(url);toast('Não consegui abrir essa foto. Tente outra.');};
+  img.src=url;
+}
+function avEditor(nome,img,limpar){
+  const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height,st={cx:.5,cy:H>W?.42:.5,zoom:H>W?1.4:1.2,est:2,out:null};
+  const palco=el('canvas',{class:'avstage',width:300,height:300,role:'img','aria-label':'Foto de '+nome+'. Arraste para centralizar o rosto.'});
+  const res=el('canvas',{class:'avres',width:AV_N,height:AV_N,role:'img','aria-label':'Avatar de '+nome});
+  const pintaPalco=()=>{const q=avQuadro(W,H,st.cx,st.cy,st.zoom),g=palco.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,palco.width,palco.height);g.drawImage(img,q.sx,q.sy,q.lado,q.lado,0,0,palco.width,palco.height);};
+  const pintaDesenho=()=>{const c=avDesenho(avRecorte(img,st.cx,st.cy,st.zoom),AV_ESTILOS[st.est]);res.getContext('2d').drawImage(c,0,0);st.out=c;};
+  let t=0;
+  const atualiza=()=>{pintaPalco();clearTimeout(t);t=setTimeout(pintaDesenho,60);};
+  let ult=null;
+  palco.addEventListener('pointerdown',e=>{ult={x:e.clientX,y:e.clientY};palco.setPointerCapture(e.pointerId);});
+  palco.addEventListener('pointermove',e=>{
+    if(!ult)return;
+    const k=palco.getBoundingClientRect().width,q=avQuadro(W,H,st.cx,st.cy,st.zoom);
+    const nx=st.cx-(e.clientX-ult.x)/k*q.lado/W,ny=st.cy-(e.clientY-ult.y)/k*q.lado/H,q2=avQuadro(W,H,nx,ny,st.zoom);
+    st.cx=(q2.sx+q2.lado/2)/W;st.cy=(q2.sy+q2.lado/2)/H;ult={x:e.clientX,y:e.clientY};atualiza();
+  });
+  ['pointerup','pointercancel'].forEach(ev=>palco.addEventListener(ev,()=>{ult=null;}));
+  const chips=el('div',{class:'chips'});
+  const pinta=()=>{[...chips.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===st.est)));};
+  AV_ESTILOS.forEach((e,i)=>chips.append(el('button',{type:'button',class:'chip sm','aria-pressed':String(i===st.est),text:e.nome,onclick:()=>{st.est=i;pinta();pintaDesenho();}})));
+  const zoom=el('input',{type:'range',min:'1',max:'3',step:'0.05',value:String(st.zoom),'aria-label':'Zoom',oninput:e=>{st.zoom=+e.target.value;atualiza();}});
+  const fecha=()=>{clearTimeout(t);document.removeEventListener('keydown',tecla);box.remove();limpar();};
+  const tecla=e=>{if(e.key==='Escape')fecha();};
+  const box=el('div',{class:'avview',role:'dialog','aria-modal':'true','aria-label':'Avatar de '+nome},
+    el('div',{class:'avcard'},
+      el('h2',{text:'🎭 Avatar de '+nome}),
+      el('div',{class:'avpair'},
+        el('figure',null,el('div',{class:'avwrap'},palco),el('figcaption',{text:'Foto: arraste'})),
+        el('figure',null,res,el('figcaption',{text:'Avatar'}))),
+      el('label',{class:'lbl',text:'Zoom'}),zoom,
+      el('label',{class:'lbl',text:'Estilo'}),chips,
+      el('p',{class:'hint',text:'Foto de pessoa: escolha um desenho. Avatar que já está pronto: escolha Original, e a imagem entra como está, só recortada. A foto enviada não é guardada: fica salvo só o recorte pequeno.'}),
+      el('div',{class:'actions'},
+        el('button',{type:'button',class:'btn primary',text:'Usar este avatar',onclick:()=>{if(!st.out)pintaDesenho();const u=st.out.toDataURL('image/jpeg',.85);fecha();avSalvar(nome,u);}}),
+        el('button',{type:'button',class:'btn',text:'Cancelar',onclick:fecha}))));
+  document.addEventListener('keydown',tecla);
+  document.body.append(box);
+  pintaPalco();pintaDesenho();
+}
+function mtAvatares(body){
+  const c=el('div',{class:'card'},el('h2',null,el('span',{class:'ico g',text:'🎭'}),'Avatares da equipe'),
+    el('p',{class:'hint',text:'Anexe a foto de cada vendedor (o app pode transformar em desenho) ou um avatar que já esteja pronto. O app guarda só o recorte pequeno, que aparece dentro do kart na corrida e nas listas, só para gerência e supervisão.'}));
+  S.cfg.franquias.forEach(fr=>{
+    const lista=mtVendedores(fr);if(!lista.length)return;
+    const linhas=lista.map(x=>{
+      const tem=!!(S.avatares[x.n]&&S.avatares[x.n].u);
+      return el('div',{class:'avrow'},vavatar(x.n),el('b',{text:x.n}),
+        el('button',{type:'button',class:'btn sm',text:tem?'📷 Trocar':'📷 Foto',onclick:()=>avEscolher(x.n)}),
+        tem?el('button',{type:'button',class:'btn sm dangerbtn',text:'Remover',onclick:()=>avSalvar(x.n,null)}):null);
+    });
+    const n=lista.filter(x=>S.avatares[x.n]&&S.avatares[x.n].u).length;
+    c.append(foldBox('av'+fr,'🏪 '+fr+' · '+n+' de '+lista.length+' com avatar',linhas));
+  });
+  body.append(c);
+}
+
+/* ---------- corrida maluca ---------- */
+const CR_CORES=['#F472B6','#60A5FA','#34D399','#FBBF24','#A78BFA'];
+const crCor=fr=>CR_CORES[Math.max(0,S.cfg.franquias.indexOf(fr))%CR_CORES.length];
+const CR_KART='<svg viewBox="0 0 64 34" aria-hidden="true"><path d="M6 24V16q0-4 5-4h19l10-5h15q4 0 4 4v13z" fill="COR"/><rect x="6" y="19" width="53" height="3" fill="rgba(255,255,255,.55)"/>'+
+  '<rect x="2" y="8" width="9" height="3" rx="1.5" fill="#222"/><rect x="5" y="10" width="2" height="6" fill="#222"/><rect x="18" y="9" width="14" height="5" rx="2" fill="rgba(0,0,0,.35)"/>'+
+  '<circle cx="17" cy="26" r="7" fill="#1b1b1f"/><circle cx="17" cy="26" r="3" fill="#cfd3dc"/><circle cx="48" cy="26" r="7" fill="#1b1b1f"/><circle cx="48" cy="26" r="3" fill="#cfd3dc"/></svg>';
+/* rótulo bem-humorado: sempre pela posição na pista, sem comparar um vendedor com o outro */
+function crRotulo(s,esp){
+  if(s>=1.3)return ['🚀','turbo total'];
+  if(s>=1)return ['🏁','cruzou a linha'];
+  if(s<=0)return ['🛠️','no box'];
+  if(esp>=1)return ['🏁','fim da corrida'];
+  if(s>=esp+.1)return ['🔥','voando'];
+  if(s>=esp-.1)return ['🙂','no ritmo'];
+  return ['💨','pisando fundo'];
+}
+function crFranquias(rs){
+  const out=[];
+  S.cfg.franquias.forEach(fr=>{
+    const ds=(rs.resDocs||[]).filter(d=>d.franquia===fr&&resMetas(d).vendas>0);
+    if(!ds.length)return;
+    const meta=ds.reduce((s,d)=>s+resMetas(d).vendas,0),feito=ds.reduce((s,d)=>s+resFeito(d).vendas,0);
+    out.push({fr:fr,meta:meta,feito:feito,S:feito/meta});
+  });
+  return out;
+}
+const CR_X=(p)=>'calc(14px + (100% - 80px) * '+p+')';
+function crFaixa(o,pos,esp){
+  const rot=crRotulo(o.S,esp),p=Math.min(o.S,1);
+  const kart=el('span',{class:'crkart'});kart.innerHTML=CR_KART.replace('COR',crCor(o.franquia));
+  const av=vavatar(o.key);av.classList.add('crav');
+  const efeito=o.S>=1?'🔥':o.S<=0?'🛠️':o.S<esp-.1?'💨':'';
+  const carro=el('div',{class:'crcarro'},efeito?el('span',{class:'crchama',text:efeito}):null,kart,av);
+  carro.dataset.alvo=CR_X(p);
+  carro.style.setProperty('left',CR_X(0));
+  const ritmo=esp>0&&esp<1?el('i',{class:'crritmo'}):null;
+  if(ritmo)ritmo.style.setProperty('left','calc(14px + (100% - 80px) * '+esp+' + 33px)');
+  return el('div',{class:'crfaixa',role:'img','aria-label':o.key+', '+o.franquia+': '+Math.round(o.S*100)+'% da meta, '+rot[1]},
+    el('div',{class:'crnome'},
+      el('b',{text:(pos<=3?MEDALHAS[pos-1]:pos+'º')+' '+o.key+(selosTxt(o)?' '+selosTxt(o):'')}),
+      el('button',{type:'button',class:'crcam','aria-label':'Anexar avatar ou foto de '+o.key,title:'Anexar avatar ou foto',text:'📷',onclick:()=>avEscolher(o.key)}),
+      el('span',{class:'crpct',text:fmtPct(o.S)})),
+    el('small',{class:'crsub',text:o.franquia+' · '+rot[0]+' '+rot[1]+' · '+fmtBRL(o.valor)+' de '+fmtBRL(o.meta)}),
+    el('div',{class:'crtrilho'},ritmo,el('i',{class:'crfim'}),carro));
+}
+function crNarrador(lista,fr,esp,frs){
+  const L=[],lider=lista[0],cruz=lista.filter(o=>o.S>=1).length;
+  L.push('🎙️ '+lider.key+' lidera a corrida com '+fmtPct(lider.S)+' da meta'+(lider.S>=1?' e já cruzou a linha de chegada!':'!'));
+  if(cruz>1)L.push('🏁 '+cruz+' vendedores já cruzaram a linha de chegada.');
+  const perto=lista.find(o=>o.S<1&&o.meta>o.valor);
+  if(perto)L.push('👀 '+perto.key+' está a '+fmtBRL(perto.meta-perto.valor)+' da linha de chegada.');
+  if(!fr&&frs.length>1){
+    const topo=frs.slice().sort((a,b)=>b.S-a.S)[0];
+    L.push('🏪 '+topo.fr+' lidera entre as franquias, com '+fmtPct(topo.S)+' da meta.');
+  }
+  return L;
+}
+function crLargar(pista,atraso){
+  [...pista.querySelectorAll('.crcarro')].forEach((c,i)=>{
+    c.style.setProperty('transition','none');c.style.setProperty('left',CR_X(0));void c.offsetWidth;
+    setTimeout(()=>{c.style.removeProperty('transition');c.style.setProperty('left',c.dataset.alvo);},(atraso||80)+i*45);
+  });
+}
+function mtCorrida(body,m){
+  const rs=monthStats(m).rs;
+  const rk=vendRank(rs).filter(o=>o.S!=null);
+  const c=el('div',{class:'card corrida'},el('h2',null,el('span',{class:'ico o',text:'🏎️'}),'Corrida maluca do mês'),
+    el('p',{class:'hint',text:'Cada kart é um vendedor andando até a linha de chegada (🏁 = 100% da meta de vendas). Toque no 📷 para anexar o avatar ou a foto do vendedor. Só a gerência e a supervisão veem.'}));
+  body.append(c);
+  if(!rk.length){c.append(el('p',{class:'hint',text:'Cadastre a meta de vendas dos vendedores para a corrida começar.'}));return;}
+  const frs=crFranquias(rs);
+  if(S.crFr&&!frs.some(f=>f.fr===S.crFr))S.crFr='';
+  const chips=el('div',{class:'chips crfil'});
+  const mk=(txt,on,fn)=>el('button',{type:'button',class:'chip sm','aria-pressed':String(on),text:txt,onclick:fn});
+  chips.append(mk('Todas',!S.crFr,()=>{S.crFr='';S.crT=0;renderAll();}));
+  frs.forEach(f=>chips.append(mk(f.fr+' · '+fmtPct(f.S),S.crFr===f.fr,()=>{S.crFr=f.fr;S.crT=0;renderAll();})));
+  c.append(chips);
+  const lista=(S.crFr?rk.filter(o=>o.franquia===S.crFr):rk).slice().sort((a,b)=>b.S-a.S||b.valor-a.valor);
+  const esp=mtRitmo(m,1,0).esp;
+  const narra=el('div',{class:'crnarra'});
+  crNarrador(lista,S.crFr,esp,frs).forEach(t=>narra.append(el('span',{text:t})));
+  c.append(narra);
+  const pista=el('div',{class:'pista'});
+  lista.forEach((o,i)=>pista.append(crFaixa(o,i+1,esp)));
+  c.append(pista);
+  c.append(el('p',{class:'crleg',text:(esp>0&&esp<1?'Pontilhado amarelo: ritmo esperado até hoje ('+Math.round(esp*100)+'% do mês). ':'')+'Chama = passou da meta; fumaça = abaixo do ritmo; chave inglesa = ainda sem vendas.'}));
+  const semMovimento=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!semMovimento)c.append(el('div',{class:'actions'},el('button',{type:'button',class:'btn sm',text:'🔁 Largar de novo',onclick:()=>crLargar(pista,40)})));
+  const agora=Date.now(),anima=!semMovimento&&agora-S.crT>15000;
+  S.crT=agora;
+  if(anima)setTimeout(()=>crLargar(pista),80);
+  else [...pista.querySelectorAll('.crcarro')].forEach(x=>{x.style.setProperty('transition','none');x.style.setProperty('left',x.dataset.alvo);});
+  const sem=[];S.cfg.franquias.forEach(fr=>(S.cfg.vendedores[fr]||[]).forEach(n=>{if(!rk.some(o=>o.key===n))sem.push(n);}));
+  if(sem.length)c.append(el('p',{class:'hint',text:'Fora da pista (sem meta de vendas): '+listPt(sem)+'.'}));
 }
 
 function failMsg(e){
@@ -5342,6 +5662,7 @@ function setTab(t){
 function renderAll(){
   S.vi=null;
   if(renderLock())return;
+  avSync();
   renderTabs();renderBanner();
   if(S.vend){renderVend();return;}
   if(S.tab==='vl')renderVL();
